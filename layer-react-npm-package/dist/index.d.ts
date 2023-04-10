@@ -1,7 +1,7 @@
 /// <reference types="react" />
-interface TestProps {
+interface ButtonProps {
     label: string;
 }
-declare const Test: (props: TestProps) => JSX.Element;
+declare const Button: (props: ButtonProps) => JSX.Element;
 
-export { Test };
+export { Button };
