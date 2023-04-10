@@ -1,10 +1,11 @@
-import {Button} from 'duckdevatgit-layer';
+import {Button, Text} from 'duckdevatgit-layer';
 import './App.css';
 
 function App() {
   return (
     <div className="App">
-     <Button label='Click Me'/>
+     <Button label="Button Label"/>
+      <Text label="Text Label"/>
     </div>
   );
 }

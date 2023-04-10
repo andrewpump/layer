@@ -1,3 +1,33 @@
+function styleInject(css, ref) {
+  if ( ref === void 0 ) ref = {};
+  var insertAt = ref.insertAt;
+
+  if (!css || typeof document === 'undefined') { return; }
+
+  var head = document.head || document.getElementsByTagName('head')[0];
+  var style = document.createElement('style');
+  style.type = 'text/css';
+
+  if (insertAt === 'top') {
+    if (head.firstChild) {
+      head.insertBefore(style, head.firstChild);
+    } else {
+      head.appendChild(style);
+    }
+  } else {
+    head.appendChild(style);
+  }
+
+  if (style.styleSheet) {
+    style.styleSheet.cssText = css;
+  } else {
+    style.appendChild(document.createTextNode(css));
+  }
+}
+
+var css_248z$2 = "body {\r\n    margin: 0;\r\n    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',\r\n      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',\r\n      sans-serif;\r\n    -webkit-font-smoothing: antialiased;\r\n    -moz-osx-font-smoothing: grayscale;\r\n  }\r\n  \r\n  code {\r\n    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',\r\n      monospace;\r\n  }\r\n  ";
+styleInject(css_248z$2);
+
 var react = {exports: {}};
 
 var react_production_min = {};
@@ -2778,39 +2808,21 @@ if (process.env.NODE_ENV === 'production') {
 
 var React = react.exports;
 
-function styleInject(css, ref) {
-  if ( ref === void 0 ) ref = {};
-  var insertAt = ref.insertAt;
-
-  if (!css || typeof document === 'undefined') { return; }
-
-  var head = document.head || document.getElementsByTagName('head')[0];
-  var style = document.createElement('style');
-  style.type = 'text/css';
-
-  if (insertAt === 'top') {
-    if (head.firstChild) {
-      head.insertBefore(style, head.firstChild);
-    } else {
-      head.appendChild(style);
-    }
-  } else {
-    head.appendChild(style);
-  }
-
-  if (style.styleSheet) {
-    style.styleSheet.cssText = css;
-  } else {
-    style.appendChild(document.createTextNode(css));
-  }
-}
-
-var css_248z = "button {\n  font-size: 60px;\n}";
-styleInject(css_248z);
+var css_248z$1 = "";
+styleInject(css_248z$1);
 
 var Button = function (props) {
-    return React.createElement("button", null, props.label);
+    return React.createElement("button", null,
+        " ",
+        React.createElement("h4", null, props.label));
 };
 
-export { Button };
+var css_248z = "";
+styleInject(css_248z);
+
+var Text = function (props) {
+    return React.createElement("h4", null, props.label);
+};
+
+export { Button, Text };
 //# sourceMappingURL=index.js.map
