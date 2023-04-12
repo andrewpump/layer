@@ -2,6 +2,31 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
+function validateKeys() {
+    // Read keys from .env file from other react project which use this npm package for validation
+    var apiKey = process.env.REACT_APP_OPEN_AI_API_KEY;
+    var sdkKey = process.env.REACT_APP_LAYER_SDK_KEY;
+    console.log('apiKey123', apiKey);
+    console.log('apiKey123', apiKey);
+    console.log('sdkKey123', sdkKey);
+    console.log('A', !apiKey);
+    console.log('B', !sdkKey);
+    console.log('C', apiKey !== "AB12C3D4-E5FG-67H8-91J0-KLMN120P3Q45");
+    console.log('D', sdkKey !== "sk_live_51Jx6f7gh8iL9a1b2c3d4e5F");
+    if (!apiKey ||
+        !sdkKey ||
+        apiKey !== "AB12C3D4-E5FG-67H8-91J0-KLMN120P3Q45" ||
+        sdkKey !== "sk_live_51Jx6f7gh8iL9a1b2c3d4e5F") {
+        console.error("API key and/or SDK key not found in environment variables");
+        return {
+            error: true
+        };
+    }
+    return {
+        error: false,
+    };
+}
+
 var react = {exports: {}};
 
 var react_production_min = {};
@@ -2813,18 +2838,27 @@ var css_248z$1 = "";
 styleInject(css_248z$1);
 
 var Button = function (props) {
-    return React.createElement("button", null,
-        " ",
-        React.createElement("h4", null, props.label));
+    var error = validateKeys().error;
+    if (error) {
+        console.log("API key and/or SDK key not found in environment variables");
+        return;
+    }
+    return (React.createElement("button", null,
+        React.createElement("h4", null, props.label)));
 };
 
 var css_248z = "";
 styleInject(css_248z);
 
 var Text = function (props) {
+    var error = validateKeys().error;
+    if (error) {
+        return;
+    }
     return React.createElement("h4", null, props.label);
 };
 
 exports.Button = Button;
 exports.Text = Text;
+exports.validateKeys = validateKeys;
 //# sourceMappingURL=index.js.map
