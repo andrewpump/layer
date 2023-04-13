@@ -7,6 +7,7 @@ import CrossIcon from "../../assets/icons/crossIcon";
 import ArrowRightIcon from "../../assets/icons/arrowRightIcon";
 import "./AiAssistant.scss";
 import EnvironmentError from "../EnvironmentError";
+import validateKeys from "../../../keys";
 
 export type AiAssistantProps = {
   itemList: ListItemProps["item"][];
@@ -15,6 +16,12 @@ export type AiAssistantProps = {
 };
 
 const AiAssistant = ({ itemList, color, image }: AiAssistantProps) => {
+  const {error} = validateKeys();
+
+  if(error){
+    return <EnvironmentError color="#FF0000"/>
+  }
+
   const [showPopUp, setShowPopUp] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [showEnvError, setShowEnvError] = useState(false);
