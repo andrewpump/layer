@@ -1,23 +1,18 @@
-import React from "react";
+import React from 'react';
 import "./Button.scss";
-import validateKeys from "../../../keys";
 
-export interface ButtonProps {
-  label: string;
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  child: React.ReactNode;
+  className?: string;
 }
 
-const Button = (props: ButtonProps) => {
-  const { error } = validateKeys();
-
-  if (error) {
-    console.log("API key and/or SDK key not found in environment variables");
-    return;
-  }
+const Button: React.FC<ButtonProps> = ({ child, className = "", ...props }) => {
   return (
-    <button>
-      <h4>{props.label}</h4>
+    <button className={`button-component-main-style ${className}`} {...props}>
+      {child}
     </button>
   );
 };
 
 export default Button;
+

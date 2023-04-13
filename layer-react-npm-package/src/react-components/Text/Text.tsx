@@ -1,18 +1,17 @@
 import React from "react";
 import "./Text.scss";
-import validateKeys from "../../../keys";
-
-export interface TextProps {
+export interface TextProps extends React.HTMLProps<HTMLParagraphElement> {
   label: string;
+  className?: string;
 }
 
-const Text = (props: TextProps) => {
-  const { error } = validateKeys();
-
-  if (error) {
-    return;
-  }
-  return <h4>{props.label}</h4>;
+const Text: React.FC<TextProps> = ({ label, className, ...props }) => {
+  return (
+    <p className={`text-main-style ${className}`} {...props}>
+      {label}
+    </p>
+  );
 };
 
 export default Text;
+

@@ -1,12 +1,18 @@
 /// <reference types="react" />
-interface ButtonProps {
-    label: string;
-}
-declare const Button: (props: ButtonProps) => JSX.Element;
+declare type ListItemProps = {
+    item: {
+        title: string;
+        subtitle: string;
+    };
+    onClickList: () => void;
+    color: string;
+};
 
-interface TextProps {
-    label: string;
-}
-declare const Text: (props: TextProps) => JSX.Element;
+declare type AiAssistantProps = {
+    itemList: ListItemProps["item"][];
+    color: string;
+    image: string;
+};
+declare const AiAssistant: ({ itemList, color, image }: AiAssistantProps) => JSX.Element;
 
-export { Button, Text };
+export { AiAssistant };

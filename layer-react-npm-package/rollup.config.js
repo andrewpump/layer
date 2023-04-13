@@ -12,33 +12,42 @@ const packageJson = require("./package.json");
 
 export default [
   {
-    input: "src/index.ts",
+    input: "./src/index.ts",
     output: [
       {
         file: packageJson.main,
         format: "cjs",
         sourcemap: true,
+        exports: 'auto'
       },
       {
         file: packageJson.module,
         format: "esm",
         sourcemap: true,
+        exports: 'auto'
       },
     ],
     plugins: [
       replace({
-        'process.env.API_KEY': JSON.stringify(process.env.API_KEY),
-        'process.env.SDK_KEY': JSON.stringify(process.env.SDK_KEY),
+        "process.env.API_KEY": JSON.stringify(process.env.API_KEY),
+        "process.env.SDK_KEY": JSON.stringify(process.env.SDK_KEY),
       }),
       json(),
       resolve(),
       commonjs(),
-      typescript({ tsconfig: "./tsconfig.json" }),
+      typescript({
+        tsconfig: "./tsconfig.json",
+        declarationDir: "dist/types",
+        declaration: true,
+        rootDir: "src",
+        exclude: ["**/*.test.ts"],
+      }),
       postcss(),
     ],
+    external: ['react', 'react-dom'],
   },
   {
-    input: "dist/esm/types/index.d.ts",
+    input: "dist/esm/types/src/index.d.ts",
     output: [{ file: "dist/index.d.ts", format: "esm" }],
     plugins: [dts()],
     external: [/\.(css|less|scss)$/],

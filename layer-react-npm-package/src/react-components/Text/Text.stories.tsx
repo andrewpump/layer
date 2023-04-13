@@ -1,19 +1,16 @@
 import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { Meta } from '@storybook/react/types-6-0';
+import Text, {TextProps} from './Text';
 
-import Text from './Text';
-
-// More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
   title: 'ReactComponentLibrary/Text',
   component: Text,
-} as ComponentMeta<typeof Text>;
+} as Meta;
 
-// More on component templates: https://storybook.js.org/docs/react/writing-stories/introduction#using-args
-const Template: ComponentStory<typeof Text> = (args) => <Text {...args} />;
+const Template = (args: TextProps) => <Text {...args} />;
 
-export const TextLabel = Template.bind({});
-// More on args: https://storybook.js.org/docs/react/writing-stories/args
-TextLabel.args = {
-  label: 'Text Label',
+export const Default = Template.bind({});
+Default.args = {
+  label: 'Hello World',
+  className: 'custom-class',
 };
