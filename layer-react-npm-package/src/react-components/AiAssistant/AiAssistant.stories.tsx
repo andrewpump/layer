@@ -11,10 +11,31 @@ const Template: Story<AiAssistantProps> = (args) => <AiAssistant {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {
-  itemList: [
-    { title: "Item 1", subtitle: "Sub Title 1" },
-    { title: "Item 2", subtitle: "Sub Title 2" },
-    { title: "Item 3", subtitle: "Sub Title 3" },
+  itemList : [
+    {
+      title: "Purchase More:",
+      subtitle: "PRINGLES SOUR CREAM & ONION PO",
+    },
+    {
+      title: "Purchase More:",
+      subtitle: "PRINGLES SOUR CREAM & ONION PO",
+    },
+    {
+      title: "Purchase More:",
+      subtitle: "PRINGLES SOUR CREAM & ONION PO",
+    },
+    {
+      title: "Purchase More:",
+      subtitle: "PRINGLES SOUR CREAM & ONION PO",
+    },
+    {
+      title: "Purchase More:",
+      subtitle: "PRINGLES SOUR CREAM & ONION PO",
+    },
+    {
+      title: "Purchase More:",
+      subtitle: "PRINGLES SOUR CREAM & ONION PO",
+    },
   ],
   color: "#7a6bf2",
   image: myImage,

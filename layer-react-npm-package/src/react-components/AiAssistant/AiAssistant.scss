@@ -30,7 +30,8 @@
   .main-popup-container-animate-start {
     @extend .main-popup-container;
     height: auto;
-    animation: mymove 0.5s;
+    max-height: 400px;
+    animation: mymove 0.8s;
     transform-origin: bottom;
     animation-timing-function: ease;
   }

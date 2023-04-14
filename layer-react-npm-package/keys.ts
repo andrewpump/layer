@@ -9,7 +9,6 @@ function validateKeys() {
     apiKey !== "AB12C3D4-E5FG-67H8-91J0-KLMN120P3Q45" ||
     sdkKey !== "sk_live_51Jx6f7gh8iL9a1b2c3d4e5F"
   ) {
-    console.error("API key and/or SDK key not found in environment variables");
     return {
       error: true
     };
