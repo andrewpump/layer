@@ -1,5 +1,5 @@
-import React, { forwardRef, useRef, useImperativeHandle, useState } from 'react';
 import axios from 'axios';
+import React, { forwardRef, useRef, useImperativeHandle, useState } from 'react';
 
 /******************************************************************************
 Copyright (c) Microsoft Corporation.
@@ -76,6 +76,58 @@ function __generator(thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 }
+
+var MyDataListEngine = /** @class */ (function () {
+    function MyDataListEngine() {
+        this.openAIKey = process.env.REACT_APP_OPEN_AI_API_KEY || "";
+        this.layerKey = process.env.REACT_APP_LAYER_SDK_KEY || "";
+    }
+    MyDataListEngine.prototype.validateKeys = function () {
+        // Your implementation here to validate the API keys
+        if (this.openAIKey === "AB12C3D4-E5FG-67H8-91J0-KLMN120P3Q45") {
+            return true;
+        }
+        return false;
+    };
+    MyDataListEngine.prototype.generateText = function (prompt) {
+        return __awaiter(this, void 0, void 0, function () {
+            var response;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, axios.post("https://api.openai.com/v1/engines/davinci-codex/completions", {
+                            prompt: prompt,
+                            max_tokens: 50,
+                            n: 1,
+                            stop: "\n",
+                        }, {
+                            headers: {
+                                "Content-Type": "application/json",
+                                Authorization: "Bearer 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",
+                            },
+                        })];
+                    case 1:
+                        response = _a.sent();
+                        return [2 /*return*/, response.data.choices[0].text.trim()];
+                }
+            });
+        });
+    };
+    MyDataListEngine.prototype.generateTextList = function (prompts) {
+        return __awaiter(this, void 0, void 0, function () {
+            var responses;
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, Promise.all(prompts.map(function (prompt) { return _this.generateText(prompt); }))];
+                    case 1:
+                        responses = _a.sent();
+                        return [2 /*return*/, responses];
+                }
+            });
+        });
+    };
+    return MyDataListEngine;
+}());
 
 function styleInject(css, ref) {
   if ( ref === void 0 ) ref = {};
@@ -196,58 +248,6 @@ var EnvironmentError = function (_a) {
             React.createElement(Text, { className: "text-style", label: "Please add these keys to your process file to correct the error" }))));
 };
 
-var MyDataListEngine = /** @class */ (function () {
-    function MyDataListEngine() {
-        this.openAIKey = process.env.REACT_APP_OPEN_AI_API_KEY || "";
-        this.layerKey = process.env.REACT_APP_LAYER_SDK_KEY || "";
-    }
-    MyDataListEngine.prototype.validateKeys = function () {
-        // Your implementation here to validate the API keys
-        if (this.openAIKey === "AB12C3D4-E5FG-67H8-91J0-KLMN120P3Q45") {
-            return true;
-        }
-        return false;
-    };
-    MyDataListEngine.prototype.generateText = function (prompt) {
-        return __awaiter(this, void 0, void 0, function () {
-            var response;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, axios.post("https://api.openai.com/v1/engines/davinci-codex/completions", {
-                            prompt: prompt,
-                            max_tokens: 50,
-                            n: 1,
-                            stop: "\n",
-                        }, {
-                            headers: {
-                                "Content-Type": "application/json",
-                                Authorization: "Bearer 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",
-                            },
-                        })];
-                    case 1:
-                        response = _a.sent();
-                        return [2 /*return*/, response.data.choices[0].text.trim()];
-                }
-            });
-        });
-    };
-    MyDataListEngine.prototype.generateTextList = function (prompts) {
-        return __awaiter(this, void 0, void 0, function () {
-            var responses;
-            var _this = this;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, Promise.all(prompts.map(function (prompt) { return _this.generateText(prompt); }))];
-                    case 1:
-                        responses = _a.sent();
-                        return [2 /*return*/, responses];
-                }
-            });
-        });
-    };
-    return MyDataListEngine;
-}());
-
 var AiAssistant = function (_a) {
     var itemList = _a.itemList, color = _a.color, image = _a.image;
     var engine = new MyDataListEngine();
@@ -306,5 +306,5 @@ var AiAssistant = function (_a) {
             React.createElement("div", { className: "main-item-list-container" }, showDetails ? (React.createElement(ItemDetail, { id: "detailif", ref: ref, color: color })) : (itemList.map(function (item, index) { return (React.createElement(ListItem, { item: item, key: index, onClickList: function () { return onClickList(); }, color: color })); })))))));
 };
 
-export { AiAssistant };
+export { AiAssistant, MyDataListEngine };
 //# sourceMappingURL=index.js.map
