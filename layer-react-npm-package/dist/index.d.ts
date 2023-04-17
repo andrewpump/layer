@@ -1,5 +1,5 @@
 /// <reference types="react" />
-declare type ListItemProps = {
+type ListItemProps = {
     item: {
         title: string;
         subtitle: string;
@@ -8,7 +8,7 @@ declare type ListItemProps = {
     color: string;
 };
 
-declare type AiAssistantProps = {
+type AiAssistantProps = {
     itemList: ListItemProps["item"][];
     color: string;
     image: string;

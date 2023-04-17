@@ -3,10 +3,12 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var React = require('react');
+var axios = require('axios');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
 var React__default = /*#__PURE__*/_interopDefaultLegacy(React);
+var axios__default = /*#__PURE__*/_interopDefaultLegacy(axios);
 
 /******************************************************************************
 Copyright (c) Microsoft Corporation.
@@ -44,6 +46,44 @@ function __rest(s, e) {
                 t[p[i]] = s[p[i]];
         }
     return t;
+}
+
+function __awaiter(thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+}
+
+function __generator(thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
 }
 
 function styleInject(css, ref) {
@@ -165,31 +205,62 @@ var EnvironmentError = function (_a) {
             React__default["default"].createElement(Text, { className: "text-style", label: "Please add these keys to your process file to correct the error" }))));
 };
 
-function validateKeys() {
-  // Read keys from .env file with another project that is using this npm package for validation
-  const apiKey = process.env.REACT_APP_OPEN_AI_API_KEY;
-  const sdkKey = process.env.REACT_APP_LAYER_SDK_KEY;
-
-  if (
-    !apiKey ||
-    !sdkKey ||
-    apiKey !== "AB12C3D4-E5FG-67H8-91J0-KLMN120P3Q45" ||
-    sdkKey !== "sk_live_51Jx6f7gh8iL9a1b2c3d4e5F"
-  ) {
-    return {
-      error: true
+var MyDataListEngine = /** @class */ (function () {
+    function MyDataListEngine() {
+        this.openAIKey = process.env.REACT_APP_OPEN_AI_API_KEY || "";
+        this.layerKey = process.env.REACT_APP_LAYER_SDK_KEY || "";
+    }
+    MyDataListEngine.prototype.validateKeys = function () {
+        // Your implementation here to validate the API keys
+        if (this.openAIKey === "AB12C3D4-E5FG-67H8-91J0-KLMN120P3Q45") {
+            return true;
+        }
+        return false;
     };
-  }
-
-  return {
-    error: false,
-  };
-}
+    MyDataListEngine.prototype.generateText = function (prompt) {
+        return __awaiter(this, void 0, void 0, function () {
+            var response;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, axios__default["default"].post("https://api.openai.com/v1/engines/davinci-codex/completions", {
+                            prompt: prompt,
+                            max_tokens: 50,
+                            n: 1,
+                            stop: "\n",
+                        }, {
+                            headers: {
+                                "Content-Type": "application/json",
+                                Authorization: "Bearer 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",
+                            },
+                        })];
+                    case 1:
+                        response = _a.sent();
+                        return [2 /*return*/, response.data.choices[0].text.trim()];
+                }
+            });
+        });
+    };
+    MyDataListEngine.prototype.generateTextList = function (prompts) {
+        return __awaiter(this, void 0, void 0, function () {
+            var responses;
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, Promise.all(prompts.map(function (prompt) { return _this.generateText(prompt); }))];
+                    case 1:
+                        responses = _a.sent();
+                        return [2 /*return*/, responses];
+                }
+            });
+        });
+    };
+    return MyDataListEngine;
+}());
 
 var AiAssistant = function (_a) {
     var itemList = _a.itemList, color = _a.color, image = _a.image;
-    var error = validateKeys().error;
-    if (error) {
+    var engine = new MyDataListEngine();
+    if (!engine.validateKeys()) {
         return React__default["default"].createElement(EnvironmentError, { color: "#FF0000" });
     }
     var _b = React.useState(false), showPopUp = _b[0], setShowPopUp = _b[1];

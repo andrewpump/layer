@@ -7,7 +7,7 @@ import CrossIcon from "../../assets/icons/crossIcon";
 import ArrowRightIcon from "../../assets/icons/arrowRightIcon";
 import "./AiAssistant.scss";
 import EnvironmentError from "../EnvironmentError";
-import validateKeys from "../../../keys";
+import { MyDataListEngine } from "../DataListEngine";
 
 export type AiAssistantProps = {
   itemList: ListItemProps["item"][];
@@ -16,9 +16,9 @@ export type AiAssistantProps = {
 };
 
 const AiAssistant = ({ itemList, color, image }: AiAssistantProps) => {
-  const {error} = validateKeys();
+  const engine= new MyDataListEngine();
 
-  if(error){
+  if(!engine.validateKeys()){
     return <EnvironmentError color="#FF0000"/>
   }
 
