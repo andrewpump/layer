@@ -86,6 +86,36 @@ function __generator(thisArg, body) {
     }
 }
 
+function __values(o) {
+    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+    if (m) return m.call(o);
+    if (o && typeof o.length === "number") return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+}
+
+function __spreadArray(to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+}
+
+function __asyncValues(o) {
+    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+    var m = o[Symbol.asyncIterator], i;
+    return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
+    function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
+    function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
+}
+
 function styleInject(css, ref) {
   if ( ref === void 0 ) ref = {};
   var insertAt = ref.insertAt;
@@ -153,6 +183,233 @@ styleInject(css_248z$3);
 var css_248z$2 = ".ai-assistant-item-details-main-container {\n  background-color: #f3f1ff;\n  margin-bottom: 12px;\n  overflow: scroll;\n  overflow-x: hidden;\n  animation: animateOpen 0.5s;\n  transform-origin: top;\n  animation-timing-function: ease-in;\n  -ms-overflow-style: none; /* IE and Edge */\n  scrollbar-width: none; /* Firefox */\n}\n@keyframes animateOpen {\n  from {\n    transform: scaleY(0);\n  }\n  to {\n    transform: scaleY(1);\n  }\n}\n.ai-assistant-item-details-main-container::-webkit-scrollbar {\n  display: none; /* Hide scrollbar for Chrome, Safari and Opera */\n}\n\n.ai-assistant-item-details-main-container-end-animation {\n  background-color: #f3f1ff;\n  margin-bottom: 12px;\n  overflow: scroll;\n  overflow-x: hidden;\n  animation: animateClose 0.5s;\n  transform-origin: top;\n  animation-timing-function: ease;\n  -ms-overflow-style: none; /* IE and Edge */\n  scrollbar-width: none; /* Firefox */\n}\n@keyframes animateClose {\n  from {\n    transform: scaleY(1);\n  }\n  to {\n    transform: scaleY(0);\n  }\n}\n.ai-assistant-item-details-main-container-end-animation::-webkit-scrollbar {\n  display: none; /* Hide scrollbar for Chrome, Safari and Opera */\n}\n\n.ai-assistant-item-details-container {\n  display: flex;\n  flex-direction: column;\n  padding: 16px;\n}\n\n.ai-assistant-item-details-heading-text-container {\n  display: flex;\n  flex: 1;\n  flex-direction: column;\n  border-bottom: 1px solid #7b6cf3;\n  padding-bottom: 16px;\n  margin-bottom: 16px;\n}";
 styleInject(css_248z$2);
 
+function createParser(onParse) {
+  let isFirstChunk;
+  let buffer;
+  let startingPosition;
+  let startingFieldLength;
+  let eventId;
+  let eventName;
+  let data;
+  reset();
+  return {
+    feed,
+    reset
+  };
+  function reset() {
+    isFirstChunk = true;
+    buffer = "";
+    startingPosition = 0;
+    startingFieldLength = -1;
+    eventId = void 0;
+    eventName = void 0;
+    data = "";
+  }
+  function feed(chunk) {
+    buffer = buffer ? buffer + chunk : chunk;
+    if (isFirstChunk && hasBom(buffer)) {
+      buffer = buffer.slice(BOM.length);
+    }
+    isFirstChunk = false;
+    const length = buffer.length;
+    let position = 0;
+    let discardTrailingNewline = false;
+    while (position < length) {
+      if (discardTrailingNewline) {
+        if (buffer[position] === "\n") {
+          ++position;
+        }
+        discardTrailingNewline = false;
+      }
+      let lineLength = -1;
+      let fieldLength = startingFieldLength;
+      let character;
+      for (let index = startingPosition; lineLength < 0 && index < length; ++index) {
+        character = buffer[index];
+        if (character === ":" && fieldLength < 0) {
+          fieldLength = index - position;
+        } else if (character === "\r") {
+          discardTrailingNewline = true;
+          lineLength = index - position;
+        } else if (character === "\n") {
+          lineLength = index - position;
+        }
+      }
+      if (lineLength < 0) {
+        startingPosition = length - position;
+        startingFieldLength = fieldLength;
+        break;
+      } else {
+        startingPosition = 0;
+        startingFieldLength = -1;
+      }
+      parseEventStreamLine(buffer, position, fieldLength, lineLength);
+      position += lineLength + 1;
+    }
+    if (position === length) {
+      buffer = "";
+    } else if (position > 0) {
+      buffer = buffer.slice(position);
+    }
+  }
+  function parseEventStreamLine(lineBuffer, index, fieldLength, lineLength) {
+    if (lineLength === 0) {
+      if (data.length > 0) {
+        onParse({
+          type: "event",
+          id: eventId,
+          event: eventName || void 0,
+          data: data.slice(0, -1)
+          // remove trailing newline
+        });
+
+        data = "";
+        eventId = void 0;
+      }
+      eventName = void 0;
+      return;
+    }
+    const noValue = fieldLength < 0;
+    const field = lineBuffer.slice(index, index + (noValue ? lineLength : fieldLength));
+    let step = 0;
+    if (noValue) {
+      step = lineLength;
+    } else if (lineBuffer[index + fieldLength + 1] === " ") {
+      step = fieldLength + 2;
+    } else {
+      step = fieldLength + 1;
+    }
+    const position = index + step;
+    const valueLength = lineLength - step;
+    const value = lineBuffer.slice(position, position + valueLength).toString();
+    if (field === "data") {
+      data += value ? "".concat(value, "\n") : "\n";
+    } else if (field === "event") {
+      eventName = value;
+    } else if (field === "id" && !value.includes("\0")) {
+      eventId = value;
+    } else if (field === "retry") {
+      const retry = parseInt(value, 10);
+      if (!Number.isNaN(retry)) {
+        onParse({
+          type: "reconnect-interval",
+          value: retry
+        });
+      }
+    }
+  }
+}
+const BOM = [239, 187, 191];
+function hasBom(buffer) {
+  return BOM.every((charCode, index) => buffer.charCodeAt(index) === charCode);
+}
+
+var OpenAIStream = function (model, systemPrompt, key, messages) { return __awaiter(void 0, void 0, void 0, function () {
+    var res, statusText, encoder, decoder, stream;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, fetch("https://api.openai.com/v1/chat/completions", {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: "Bearer ".concat(key),
+                    },
+                    method: 'POST',
+                    body: JSON.stringify({
+                        model: model.id,
+                        messages: __spreadArray([
+                            {
+                                role: 'system',
+                                content: systemPrompt,
+                            }
+                        ], messages, true),
+                        max_tokens: 1000,
+                        temperature: 1,
+                        stream: true,
+                    }),
+                })];
+            case 1:
+                res = _a.sent();
+                if (res.status !== 200) {
+                    statusText = res.statusText;
+                    throw new Error("OpenAI API returned an error: ".concat(statusText));
+                }
+                encoder = new TextEncoder();
+                decoder = new TextDecoder();
+                stream = new ReadableStream({
+                    start: function (controller) {
+                        var _a, e_1, _b, _c;
+                        return __awaiter(this, void 0, void 0, function () {
+                            var onParse, parser, _d, _e, _f, chunk, e_1_1;
+                            return __generator(this, function (_g) {
+                                switch (_g.label) {
+                                    case 0:
+                                        onParse = function (event) {
+                                            if (event.type === 'event') {
+                                                var data = event.data;
+                                                if (data === '[DONE]') {
+                                                    controller.close();
+                                                    return;
+                                                }
+                                                try {
+                                                    var json = JSON.parse(data);
+                                                    var text = json.choices[0].delta.content;
+                                                    process.stdout.write(text);
+                                                    var queue = encoder.encode(text);
+                                                    controller.enqueue(queue);
+                                                }
+                                                catch (e) {
+                                                    controller.error(e);
+                                                }
+                                            }
+                                        };
+                                        parser = createParser(onParse);
+                                        _g.label = 1;
+                                    case 1:
+                                        _g.trys.push([1, 6, 7, 12]);
+                                        _d = true, _e = __asyncValues(res.body);
+                                        _g.label = 2;
+                                    case 2: return [4 /*yield*/, _e.next()];
+                                    case 3:
+                                        if (!(_f = _g.sent(), _a = _f.done, !_a)) return [3 /*break*/, 5];
+                                        _c = _f.value;
+                                        _d = false;
+                                        try {
+                                            chunk = _c;
+                                            parser.feed(decoder.decode(chunk));
+                                        }
+                                        finally {
+                                            _d = true;
+                                        }
+                                        _g.label = 4;
+                                    case 4: return [3 /*break*/, 2];
+                                    case 5: return [3 /*break*/, 12];
+                                    case 6:
+                                        e_1_1 = _g.sent();
+                                        e_1 = { error: e_1_1 };
+                                        return [3 /*break*/, 12];
+                                    case 7:
+                                        _g.trys.push([7, , 10, 11]);
+                                        if (!(!_d && !_a && (_b = _e.return))) return [3 /*break*/, 9];
+                                        return [4 /*yield*/, _b.call(_e)];
+                                    case 8:
+                                        _g.sent();
+                                        _g.label = 9;
+                                    case 9: return [3 /*break*/, 11];
+                                    case 10:
+                                        if (e_1) throw e_1.error;
+                                        return [7 /*endfinally*/];
+                                    case 11: return [7 /*endfinally*/];
+                                    case 12: return [2 /*return*/];
+                                }
+                            });
+                        });
+                    },
+                });
+                return [2 /*return*/, stream];
+        }
+    });
+}); };
+
 var ItemDetail = React.forwardRef(function (_a, ref) {
     var color = _a.color; _a.id; var itemData = _a.itemData;
     var refForDiv = React.useRef(null);
@@ -175,35 +432,31 @@ var ItemDetail = React.forwardRef(function (_a, ref) {
     }, []);
     // call openai streaming api and update item content with the response
     var generateText = function () { return __awaiter(void 0, void 0, void 0, function () {
-        var res, data;
+        var model, m1, stream;
         return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    console.log("Payload: ", itemData.payload);
-                    return [4 /*yield*/, fetch("https://api.openai.com/v1/chat/completions", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                                Authorization: "Bearer ".concat(process.env.REACT_APP_OPEN_AI_API_KEY),
-                            },
-                            body: JSON.stringify({
-                                "model": "gpt-3.5-turbo",
-                                "messages": [{ "role": "user", "content": itemData.payload }]
-                            }),
-                        })];
-                case 1:
-                    res = _a.sent();
-                    return [4 /*yield*/, res.json()];
-                case 2:
-                    data = _a.sent();
-                    console.log("Data: ", data);
-                    setItem({
-                        title: itemData.title,
-                        subtitle: itemData.subtitle,
-                        content: data.choices[0].message.content,
-                    });
-                    return [2 /*return*/];
-            }
+            model = {
+                id: 'gpt-4',
+                name: 'GPT-4',
+                maxLength: 24000,
+                tokenLimit: 6000,
+            };
+            m1 = {
+                role: 'user',
+                content: 'This is a test, respond with anything to confirm it is working'
+            };
+            stream = OpenAIStream(model, "You are an AI", process.env.REACT_APP_OPEN_AI_API_KEY || "not valid key", [m1]);
+            // update item content with the response in ReadbaleStream
+            stream.then(function (response) {
+                var reader = response.getReader();
+                console.log("Reader: ", reader, "response: ", response);
+            });
+            console.log("Stream: ", stream);
+            setItem({
+                title: itemData.title,
+                subtitle: itemData.subtitle,
+                content: "temp",
+            });
+            return [2 /*return*/];
         });
     }); };
     return (React__default["default"].createElement("div", { ref: refForDiv, style: { backgroundColor: "".concat(color, "18") }, className: "ai-assistant-item-details-main-container" },

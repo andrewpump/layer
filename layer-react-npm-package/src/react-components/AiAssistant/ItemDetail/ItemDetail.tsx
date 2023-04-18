@@ -9,6 +9,9 @@ import Text from "../../../react-components/Text";
 import "../../../assets/styles/styles.scss";
 import "./ItemDetail.scss";
 import { ItemData } from "../AiAssistant"
+import { OpenAIStream } from "../../../openai/gpt4-request";
+import { OpenAIModel } from "../../../openai/openai";
+import { Message } from "../../../openai/chat";
 
 
 export type ItemDetailProps = {
@@ -55,27 +58,32 @@ const ItemDetail = forwardRef<ItemDetailHandle, ItemDetailProps>(
     // call openai streaming api and update item content with the response
     const generateText = async () => {
 
-      console.log("Payload: ", itemData.payload)
-      const res = await fetch(
-        "https://api.openai.com/v1/chat/completions",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${process.env.REACT_APP_OPEN_AI_API_KEY}`,
-          },
-          body: JSON.stringify({
-            "model": "gpt-3.5-turbo",
-            "messages": [{"role": "user", "content": itemData.payload}]
-          }),
-        }
-      );
-      const data = await res.json();
-      console.log("Data: ", data);
+      const model: OpenAIModel = {
+        id: 'gpt-4',
+        name: 'GPT-4',
+        maxLength: 24000,
+        tokenLimit: 6000,
+      }
+      
+      const m1: Message = {
+        role: 'user',
+        content: 'This is a test, respond with anything to confirm it is working'
+      }
+      
+      const stream = OpenAIStream(model, "You are an AI", process.env.REACT_APP_OPEN_AI_API_KEY || "not valid key", [m1]);
+
+      // update item content with the response in ReadbaleStream
+      stream.then((response) => {
+        const reader = response.getReader();
+        console.log("Reader: ", reader,  "response: ", response);
+      })
+
+
+      console.log("Stream: ", stream);
       setItem({
         title: itemData.title,
         subtitle: itemData.subtitle,
-        content: data.choices[0].message.content,
+        content: "temp",
       });
     };
 

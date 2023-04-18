@@ -63,6 +63,7 @@
   "dependencies": {
     "common-js": "^0.3.8",
     "commonjs": "^0.0.1",
+    "eventsource-parser": "^1.0.0",
     "postcss": "^8.4.21"
   },
   "peerDependencies": {

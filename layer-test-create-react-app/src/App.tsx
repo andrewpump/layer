@@ -15,12 +15,17 @@ function App() {
     const randomNum = Math.floor(Math.random() * 3) + 3;
     for (let i = 0; i < randomNum; i++) {
       const randomIndex = Math.floor(Math.random() * data.length);
-      const construct = {
-        title: data[randomIndex].policy_action,
-        subtitle: data[randomIndex].product_code_description,
-        payload: JSON.stringify(data[randomIndex]),
-      };
-      li.push(construct);
+      if (data[randomIndex].policy_action !== "No recommendation" && data[randomIndex].policy_action !== "No action required") {
+        const construct = {
+          title: data[randomIndex].policy_action,
+          subtitle: data[randomIndex].product_code_description,
+          payload: JSON.stringify(data[randomIndex]),
+        };
+        li.push(construct);
+      } else {
+        i--;
+      }
+
     }
     setListItems(li);
   };
