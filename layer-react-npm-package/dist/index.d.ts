@@ -1,17 +1,13 @@
 /// <reference types="react" />
-type ListItemProps = {
-    item: {
-        title: string;
-        subtitle: string;
-    };
-    onClickList: () => void;
-    color: string;
-};
-
 type AiAssistantProps = {
-    itemList: ListItemProps["item"][];
+    itemList: ItemData[];
     color: string;
     image: string;
+};
+type ItemData = {
+    title: string;
+    subtitle: string;
+    payload: string;
 };
 declare const AiAssistant: ({ itemList, color, image }: AiAssistantProps) => JSX.Element;
 

@@ -2,7 +2,6 @@ import { AiAssistant } from 'duckdevatgit-layer';
 import './App.css';
 import DemoImage from "./assets/images/demoImage.png"
 import data from './assets/sample.json';
-import Papa from "papaparse";
 import React, { useEffect, useState } from 'react';
 
 

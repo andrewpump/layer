@@ -1,4 +1,4 @@
-import React, { useState, useRef  } from "react";
+import React, { useState, useRef, useEffect  } from "react";
 import Text from "../Text/Text";
 import Button from "../Button/Button";
 import ListItem, { ListItemProps } from "./ListItem/ListItem";
@@ -10,10 +10,17 @@ import EnvironmentError from "../EnvironmentError";
 import { MyDataListEngine } from "../DataListEngine";
 
 export type AiAssistantProps = {
-  itemList: ListItemProps["item"][];
+  itemList: ItemData[];
   color: string;
   image: string;
 };
+
+export type ItemData = {
+  title: string;
+  subtitle: string;
+  payload: string;
+}
+
 
 const AiAssistant = ({ itemList, color, image }: AiAssistantProps) => {
   const engine = new MyDataListEngine();
@@ -23,57 +30,74 @@ const AiAssistant = ({ itemList, color, image }: AiAssistantProps) => {
   }
 
   const [showPopUp, setShowPopUp] = useState(false);
-  // const [showDetails, setShowDetails] = useState(false);
-  // const [showEnvError, setShowEnvError] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
+  const [showEnvError, setShowEnvError] = useState(false);
+  const [itemDataList, setItemDataList] = useState<ItemData[]>([]);
+  const [selectedItem, setSelectedItem] = useState<number>(0);
 
-  // const ref = useRef<any>();
-  // const refPopUp = useRef<HTMLDivElement>(null);
-  // const refBackButton = useRef<HTMLButtonElement>(null);
+  const ref = useRef<any>();
+  const refPopUp = useRef<HTMLDivElement>(null);
+  const refBackButton = useRef<HTMLButtonElement>(null);
 
-  // const onClickList = async(title:string) => {
-  //   try {
-  //     const res = await engine.generateText(title);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
+  const prefacePrompt = `Justify the policy action in this json data using the other data in the obejct and respond very concisely and use numbers: \n\n`
+
+  // Create a useEffect hook that fills itemDataList wiht ItemData objects from the itemList
+  useEffect(() => {
+    const tempItemDataList: ItemData[] = [];
+    itemList.forEach((item) => {
+      tempItemDataList.push({
+        title: item.title,
+        subtitle: item.subtitle,
+        payload: prefacePrompt + item.payload,
+      });
+    });
+    setItemDataList(tempItemDataList);
+  }, [itemList]);
+
+  const onClickList = async(title:string) => {
+    try {
+      const res = await engine.generateText(title);
+    } catch (error) {
+      console.log(error);
+    }
     
-  //   setShowDetails(true);
-  // };
+    setShowDetails(true);
+  };
 
-  // const onClickPopupButton = () => {
-  //   setShowDetails(false);
-  //   if (showPopUp) {
-  //     if (refPopUp.current) {
-  //       refPopUp.current.className = "main-popup-container-animate-end";
-  //       const timer = setTimeout(() => {
-  //         setShowPopUp(false);
-  //       }, 250);
-  //       return () => clearTimeout(timer);
-  //     }
-  //   } else {
-  //     setShowPopUp(true);
-  //   }
-  // };
+  const onClickPopupButton = () => {
+    setShowDetails(false);
+    if (showPopUp) {
+      if (refPopUp.current) {
+        refPopUp.current.className = "main-popup-container-animate-end";
+        const timer = setTimeout(() => {
+          setShowPopUp(false);
+        }, 250);
+        return () => clearTimeout(timer);
+      }
+    } else {
+      setShowPopUp(true);
+    }
+  };
 
-  // const onClickBackButton = () => {
-  //   if (showDetails) {
-  //     if (refBackButton.current) {
-  //       refBackButton.current.className =
-  //         "ai-assistant-main-popup-header-back-button-style-end";
-  //       ref.current.log();
-  //       const timer = setTimeout(() => {
-  //         setShowDetails(false);
-  //       }, 250);
-  //       return () => clearTimeout(timer);
-  //     }
-  //   } else {
-  //     setShowDetails(true);
-  //   }
-  // };
+  const onClickBackButton = () => {
+    if (showDetails) {
+      if (refBackButton.current) {
+        refBackButton.current.className =
+          "ai-assistant-main-popup-header-back-button-style-end";
+        ref.current.log();
+        const timer = setTimeout(() => {
+          setShowDetails(false);
+        }, 250);
+        return () => clearTimeout(timer);
+      }
+    } else {
+      setShowDetails(true);
+    }
+  };
 
   return (
     <div className="ai-assistant-main-container">
-      {/* <Button
+      <Button
         style={{ backgroundColor: color }}
         className="main-popup-button"
         onClick={() => onClickPopupButton()}
@@ -115,20 +139,21 @@ const AiAssistant = ({ itemList, color, image }: AiAssistantProps) => {
                 id="detailif"
                 ref={ref}
                 color={color}
+                itemData={itemDataList[selectedItem]}
               />
             ) : (
               itemList.map((item, index) => (
                 <ListItem
                   item={item}
                   key={index}
-                  onClickList={() => onClickList(item.title)}
+                  onClickList={() => {onClickList(item.title); setSelectedItem(index)}}
                   color={color}
                 />
               ))
             )}
           </div>
         </div>
-      )} */}
+      )}
     </div>
   );
 };

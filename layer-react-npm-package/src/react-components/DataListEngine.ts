@@ -35,24 +35,29 @@ export class MyDataListEngine implements DataListEngine {
 
   async generateText(prompt: string): Promise<string> {
 
-    console.log("Open AI Key:", this.openAIKey)
+    console.log("Prompt:", prompt)
+
+    // Call the openai API to generate text using openAIKey and axios
     const response = await axios.post(
-      "https://api.openai.com/v1/engines/davinci-codex/completions",
+      "https://api.openai.com/v1/engines/davinci/completions",
       {
         prompt: prompt,
-        max_tokens: 50,
-        n: 1,
-        stop: "\n",
+        max_tokens: 100,
+        temperature: 0.7,
+        top_p: 1,
+        frequency_penalty: 0,
+        presence_penalty: 0,
+        stop: ["\n", "  ", "  "],
       },
       {
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${this.openAIKey}`,
+          "Content-Type": "application/json",
         },
       }
     );
 
-    console.log(response)
+    console.log(response.data.choices[0].text.trim())
     return response.data.choices[0].text.trim();
   }
 
