@@ -30,7 +30,13 @@ const AiAssistant = ({ itemList, color, image }: AiAssistantProps) => {
   const refPopUp = useRef<HTMLDivElement>(null);
   const refBackButton = useRef<HTMLButtonElement>(null);
 
-  const onClickList = () => {
+  const onClickList = async(title:string) => {
+    try {
+      const res = await engine.generateText(title);
+    } catch (error) {
+      console.log(error);
+    }
+    
     setShowDetails(true);
   };
 
@@ -115,7 +121,7 @@ const AiAssistant = ({ itemList, color, image }: AiAssistantProps) => {
                 <ListItem
                   item={item}
                   key={index}
-                  onClickList={() => onClickList()}
+                  onClickList={() => onClickList(item.title)}
                   color={color}
                 />
               ))
