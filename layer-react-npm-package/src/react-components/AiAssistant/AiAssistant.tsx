@@ -16,64 +16,64 @@ export type AiAssistantProps = {
 };
 
 const AiAssistant = ({ itemList, color, image }: AiAssistantProps) => {
-  const engine= new MyDataListEngine();
+  const engine = new MyDataListEngine();
 
   if(!engine.validateKeys()){
     return <EnvironmentError color="#FF0000"/>
   }
 
   const [showPopUp, setShowPopUp] = useState(false);
-  const [showDetails, setShowDetails] = useState(false);
-  const [showEnvError, setShowEnvError] = useState(false);
+  // const [showDetails, setShowDetails] = useState(false);
+  // const [showEnvError, setShowEnvError] = useState(false);
 
-  const ref = useRef<any>();
-  const refPopUp = useRef<HTMLDivElement>(null);
-  const refBackButton = useRef<HTMLButtonElement>(null);
+  // const ref = useRef<any>();
+  // const refPopUp = useRef<HTMLDivElement>(null);
+  // const refBackButton = useRef<HTMLButtonElement>(null);
 
-  const onClickList = async(title:string) => {
-    try {
-      const res = await engine.generateText(title);
-    } catch (error) {
-      console.log(error);
-    }
+  // const onClickList = async(title:string) => {
+  //   try {
+  //     const res = await engine.generateText(title);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
     
-    setShowDetails(true);
-  };
+  //   setShowDetails(true);
+  // };
 
-  const onClickPopupButton = () => {
-    setShowDetails(false);
-    if (showPopUp) {
-      if (refPopUp.current) {
-        refPopUp.current.className = "main-popup-container-animate-end";
-        const timer = setTimeout(() => {
-          setShowPopUp(false);
-        }, 250);
-        return () => clearTimeout(timer);
-      }
-    } else {
-      setShowPopUp(true);
-    }
-  };
+  // const onClickPopupButton = () => {
+  //   setShowDetails(false);
+  //   if (showPopUp) {
+  //     if (refPopUp.current) {
+  //       refPopUp.current.className = "main-popup-container-animate-end";
+  //       const timer = setTimeout(() => {
+  //         setShowPopUp(false);
+  //       }, 250);
+  //       return () => clearTimeout(timer);
+  //     }
+  //   } else {
+  //     setShowPopUp(true);
+  //   }
+  // };
 
-  const onClickBackButton = () => {
-    if (showDetails) {
-      if (refBackButton.current) {
-        refBackButton.current.className =
-          "ai-assistant-main-popup-header-back-button-style-end";
-        ref.current.log();
-        const timer = setTimeout(() => {
-          setShowDetails(false);
-        }, 250);
-        return () => clearTimeout(timer);
-      }
-    } else {
-      setShowDetails(true);
-    }
-  };
+  // const onClickBackButton = () => {
+  //   if (showDetails) {
+  //     if (refBackButton.current) {
+  //       refBackButton.current.className =
+  //         "ai-assistant-main-popup-header-back-button-style-end";
+  //       ref.current.log();
+  //       const timer = setTimeout(() => {
+  //         setShowDetails(false);
+  //       }, 250);
+  //       return () => clearTimeout(timer);
+  //     }
+  //   } else {
+  //     setShowDetails(true);
+  //   }
+  // };
 
   return (
     <div className="ai-assistant-main-container">
-      <Button
+      {/* <Button
         style={{ backgroundColor: color }}
         className="main-popup-button"
         onClick={() => onClickPopupButton()}
@@ -128,7 +128,7 @@ const AiAssistant = ({ itemList, color, image }: AiAssistantProps) => {
             )}
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

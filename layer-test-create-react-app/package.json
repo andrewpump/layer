@@ -11,6 +11,7 @@
     "@types/react": "^18.0.33",
     "@types/react-dom": "^18.0.11",
     "duckdevatgit-layer": "^2.0.62",
+    "papaparse": "^5.4.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
@@ -42,6 +43,7 @@
     ]
   },
   "devDependencies": {
+    "@types/papaparse": "^5.3.7",
     "dotenv": "^16.0.3"
   }
 }

@@ -30,13 +30,12 @@ export class MyDataListEngine implements DataListEngine {
 
   validateKeys(): boolean {
     // Your implementation here to validate the API keys
-    if (this.openAIKey === "AB12C3D4-E5FG-67H8-91J0-KLMN120P3Q45") {
-        return true;
-    }
-    return false;
+    return true;
   }
 
   async generateText(prompt: string): Promise<string> {
+
+    console.log("Open AI Key:", this.openAIKey)
     const response = await axios.post(
       "https://api.openai.com/v1/engines/davinci-codex/completions",
       {
@@ -48,11 +47,12 @@ export class MyDataListEngine implements DataListEngine {
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer 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`,
+          Authorization: `Bearer ${this.openAIKey}`,
         },
       }
     );
 
+    console.log(response)
     return response.data.choices[0].text.trim();
   }
 

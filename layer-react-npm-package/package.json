@@ -2,6 +2,7 @@
   "name": "duckdevatgit-layer",
   "version": "2.0.63",
   "description": "A react component library",
+  "type": "module",
   "scripts": {
     "rollup": "rollup -c",
     "test": "jest",
@@ -60,6 +61,8 @@
   ],
   "types": "dist/index.d.ts",
   "dependencies": {
+    "common-js": "^0.3.8",
+    "commonjs": "^0.0.1",
     "postcss": "^8.4.21"
   },
   "peerDependencies": {
