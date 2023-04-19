@@ -8,19 +8,19 @@ import {
 } from 'eventsource-parser';
 
 export const OpenAIStream = async (
-  model: OpenAIModel,
   systemPrompt: string,
   key: string,
   messages: Message[],
+  update: (text: string) => void,
 ) => {
   const res = await fetch(`https://api.openai.com/v1/chat/completions`, {
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${key}`,
+      'Authorization': `Bearer ${key}`,
     },
     method: 'POST',
     body: JSON.stringify({
-      model: model.id,
+      model: 'gpt-3.5-turbo',
       messages: [
         {
           role: 'system',
@@ -44,10 +44,12 @@ export const OpenAIStream = async (
 
   const stream = new ReadableStream({
     async start(controller) {
+      console.log("Starting stream");
       const onParse = (event: ParsedEvent | ReconnectInterval) => {
         if (event.type === 'event') {
           const data = event.data;
 
+          console.log("Data: ", data);
           if (data === '[DONE]') {
             controller.close();
             return;
@@ -56,7 +58,7 @@ export const OpenAIStream = async (
           try {
             const json = JSON.parse(data);
             const text = json.choices[0].delta.content;
-            process.stdout.write(text);
+            update(text);
             const queue = encoder.encode(text);
             controller.enqueue(queue);
           } catch (e) {
@@ -68,6 +70,7 @@ export const OpenAIStream = async (
       const parser = createParser(onParse);
 
       for await (const chunk of res.body as any) {
+        console.log("Chunk: ", chunk);
         parser.feed(decoder.decode(chunk));
       }
     },
