@@ -18,12 +18,12 @@ export default [
       {
         file: packageJson.main,
         format: "cjs",
-        exports: 'auto'
+        exports: "auto",
       },
       {
         file: packageJson.module,
         format: "esm",
-        exports: 'auto'
+        exports: "auto",
       },
     ],
     plugins: [
@@ -32,9 +32,7 @@ export default [
         "process.env.SDK_KEY": JSON.stringify(process.env.SDK_KEY),
       }),
       copy({
-        targets: [
-          { src: 'src/assets/images', dest: 'dist/esm/assets' },
-        ]
+        targets: [{ src: "src/assets/images", dest: "dist/esm/assets" }],
       }),
       json(),
       resolve(),
@@ -48,7 +46,7 @@ export default [
       }),
       postcss(),
     ],
-    external: ['react', 'react-dom', 'axios'],
+    external: ["react", "react-dom", "axios"],
   },
   {
     input: "dist/esm/index.d.ts",
