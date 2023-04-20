@@ -6,6 +6,7 @@ import dts from "rollup-plugin-dts";
 import json from '@rollup/plugin-json';
 import dotenv from 'dotenv';
 import replace from '@rollup/plugin-replace';
+import copy from 'rollup-plugin-copy';
 
 dotenv.config();
 const packageJson = require("./package.json");
@@ -29,6 +30,11 @@ export default [
       replace({
         "process.env.API_KEY": JSON.stringify(process.env.API_KEY),
         "process.env.SDK_KEY": JSON.stringify(process.env.SDK_KEY),
+      }),
+      copy({
+        targets: [
+          { src: 'src/assets/images', dest: 'dist/esm/assets' },
+        ]
       }),
       json(),
       resolve(),
