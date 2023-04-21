@@ -1,6 +1,6 @@
 {
   "name": "duckdevatgit-layer",
-  "version": "3.0.92",
+  "version": "3.0.95",
   "description": "A react component library",
   "scripts": {
     "rollup": "rollup -c",
@@ -17,6 +17,7 @@
     "@babel/preset-react": "^7.16.0",
     "@babel/preset-typescript": "^7.16.0",
     "@mdx-js/react": "^2.1.2",
+    "@react-spring/web": "^9.7.2",
     "@rollup/plugin-commonjs": "^21.1.0",
     "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "^13.3.0",

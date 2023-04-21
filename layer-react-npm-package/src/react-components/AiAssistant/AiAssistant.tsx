@@ -102,8 +102,7 @@ const AiAssistant = ({ itemList, color, image }: AiAssistantProps) => {
     height: showDiv ? "427px" : "0",
     opacity: showDiv ? 1 : 0,
     overflow: "hidden",
-    config: { tension: 200, friction: 100 },
-    scale: showDiv ? 1 : 0,
+    config: { tension: 110, friction: 80 },
   });
 
   return (
