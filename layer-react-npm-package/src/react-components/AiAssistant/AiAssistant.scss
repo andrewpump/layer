@@ -23,17 +23,17 @@
     flex-direction: column;
     background-color: white;
     overflow: hidden;
-    animation: mymove 0.7s;
-    transition:transform 3s ease-out;
-    transform:scaleY(1);
+    // animation: mymove 0.7s;
+    // transition:transform 3s ease-out;
+    // transform:scaleY(1);
   }
   .main-popup-container-animate-start {
     @extend .main-popup-container;
     height: auto;
     max-height: 400px;
-    animation: mymove 0.8s;
-    transform-origin: bottom;
-    animation-timing-function: ease;
+    // animation: mymove 0.8s;
+    // transform-origin: bottom;
+    // animation-timing-function: ease;
   }
 
   .main-popup-container-animate-end {
@@ -41,31 +41,31 @@
     height: 0px;
     padding-top: 0px;
     padding-bottom: 0px;
-    animation: mymove2 0.8s;
-    transform-origin: bottom;
-    animation-timing-function: ease-out;
+    // animation: mymove2 0.8s;
+    // transform-origin: bottom;
+    // animation-timing-function: ease-out;
   }
 
-  @keyframes mymove {
-    from {
-      height: 0px;
-      transform: scaleY(0);
-    }
-    to {
-      height: auto;
-      transform: scaleY(1);
-    }
-  }
-  @keyframes mymove2 {
-    from {
-      height: auto;
-      transform: scaleY(1);
-    }
-    to {
-      height: 0px;
-      transform: scaleY(0);
-    }
-  }
+  // @keyframes mymove {
+  //   from {
+  //     height: 0px;
+  //     transform: scaleY(0);
+  //   }
+  //   to {
+  //     height: auto;
+  //     transform: scaleY(1);
+  //   }
+  // }
+  // @keyframes mymove2 {
+  //   from {
+  //     height: auto;
+  //     transform: scaleY(1);
+  //   }
+  //   to {
+  //     height: 0px;
+  //     transform: scaleY(0);
+  //   }
+  // }
 
   .popup-header-container {
     display: flex;
@@ -82,7 +82,7 @@
       height: 32px;
       width: 32px;
       margin-right: 16px;
-      animation: mymove3 0.8s;
+      // animation: mymove3 0.8s;
       overflow: hidden;
     }
 
@@ -105,30 +105,30 @@
     height: 32px;
     width: 32px;
     margin-right: 16px;
-    animation: mymove4 0.8s;
+    // animation: mymove4 0.8s;
     overflow: hidden;
   }
-  @keyframes mymove3 {
-    from {
-      width: 0px;
-      margin-right: 0px;
-    }
-    to {
-      width: 32px;
-      margin-right: 16px;
-    }
-  }
+  // @keyframes mymove3 {
+  //   from {
+  //     width: 0px;
+  //     margin-right: 0px;
+  //   }
+  //   to {
+  //     width: 32px;
+  //     margin-right: 16px;
+  //   }
+  // }
 
-  @keyframes mymove4 {
-    from {
-      width: 32px;
-      margin-right: 16px;
-    }
-    to {
-      width: 0px;
-      margin-right: 0px;
-    }
-  }
+  // @keyframes mymove4 {
+  //   from {
+  //     width: 32px;
+  //     margin-right: 16px;
+  //   }
+  //   to {
+  //     width: 0px;
+  //     margin-right: 0px;
+  //   }
+  // }
 
   .main-item-list-container {
     max-height: calc(100vh - 260px);

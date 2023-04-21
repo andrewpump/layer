@@ -1,8 +1,7 @@
 {
   "name": "duckdevatgit-layer",
-  "version": "3.0.76",
+  "version": "3.0.92",
   "description": "A react component library",
-  "type": "module",
   "scripts": {
     "rollup": "rollup -c",
     "test": "jest",

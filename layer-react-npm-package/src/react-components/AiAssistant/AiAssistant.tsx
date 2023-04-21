@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect  } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Text from "../Text/Text";
 import Button from "../Button/Button";
 import ListItem, { ListItemProps } from "./ListItem/ListItem";
@@ -8,6 +8,7 @@ import ArrowRightIcon from "../../assets/icons/arrowRightIcon";
 import "./AiAssistant.scss";
 import EnvironmentError from "../EnvironmentError";
 import { MyDataListEngine } from "../DataListEngine";
+import { useSpring, animated, useTransition } from "@react-spring/web";
 
 export type AiAssistantProps = {
   itemList: ItemData[];
@@ -19,14 +20,13 @@ export type ItemData = {
   title: string;
   subtitle: string;
   payload: string;
-}
-
+};
 
 const AiAssistant = ({ itemList, color, image }: AiAssistantProps) => {
   const engine = new MyDataListEngine();
 
-  if(!engine.validateKeys()){
-    return <EnvironmentError color="#FF0000"/>
+  if (!engine.validateKeys()) {
+    return <EnvironmentError color="#FF0000" />;
   }
 
   const [showPopUp, setShowPopUp] = useState(false);
@@ -39,7 +39,7 @@ const AiAssistant = ({ itemList, color, image }: AiAssistantProps) => {
   const refPopUp = useRef<HTMLDivElement>(null);
   const refBackButton = useRef<HTMLButtonElement>(null);
 
-  const prefacePrompt = `Justify the policy action in this json data using the other data in the obejct and respond very concisely and use numbers: \n\n`
+  const prefacePrompt = `Justify the policy action in this json data using the other data in the obejct and respond very concisely and use numbers: \n\n`;
 
   // Create a useEffect hook that fills itemDataList wiht ItemData objects from the itemList
   useEffect(() => {
@@ -54,17 +54,18 @@ const AiAssistant = ({ itemList, color, image }: AiAssistantProps) => {
     setItemDataList(tempItemDataList);
   }, [itemList]);
 
-  const onClickList = async(title:string) => {
+  const onClickList = async (title: string) => {
     try {
       const res = await engine.generateText(title);
     } catch (error) {
       console.log(error);
     }
-    
+
     setShowDetails(true);
   };
 
   const onClickPopupButton = () => {
+    setShowDiv(!showDiv);
     setShowDetails(false);
     if (showPopUp) {
       if (refPopUp.current) {
@@ -95,66 +96,82 @@ const AiAssistant = ({ itemList, color, image }: AiAssistantProps) => {
     }
   };
 
+  const [showDiv, setShowDiv] = useState(false);
+
+  const springProps = useSpring({
+    height: showDiv ? "427px" : "0",
+    opacity: showDiv ? 1 : 0,
+    overflow: "hidden",
+    config: { tension: 200, friction: 100 },
+    scale: showDiv ? 1 : 0,
+  });
+
   return (
-    <div className="ai-assistant-main-container">
-      <Button
-        style={{ backgroundColor: color }}
-        className="main-popup-button"
-        onClick={() => onClickPopupButton()}
-        child={
-          showPopUp ? (
-            <CrossIcon color="#ffffff" />
-          ) : (
-            <img src={image} alt="img" width="32px" height="32px" />
-          )
-        }
-      />
-      {showPopUp && (
-        <div
-          ref={refPopUp}
-          id="tunnel"
-          className="main-popup-container-animate-start"
-        >
-          {showEnvError && <EnvironmentError color={color} />}
-          <div
-            className="popup-header-container"
-            style={{ borderBottomColor: color }}
-          >
-            {showDetails && (
-              <button
-                ref={refBackButton}
-                onClick={() => onClickBackButton()}
-                className="header-back-button-style"
-              >
-                <ArrowRightIcon color={color} />
-              </button>
-            )}
-            <div className="header-text-container">
-              <Text className="header-text-style" label="Bops Insight" />
-            </div>
-          </div>
-          <div className="main-item-list-container">
-            {showDetails ? (
-              <ItemDetail
-                id="detailif"
-                ref={ref}
-                color={color}
-                itemData={itemDataList[selectedItem]}
-              />
+    <>
+      <div className="ai-assistant-main-container">
+        <Button
+          style={{ backgroundColor: color }}
+          className="main-popup-button"
+          onClick={() => onClickPopupButton()}
+          child={
+            showPopUp ? (
+              <CrossIcon color="#ffffff" />
             ) : (
-              itemList.map((item, index) => (
-                <ListItem
-                  item={item}
-                  key={index}
-                  onClickList={() => {onClickList(item.title); setSelectedItem(index)}}
+              <img src={image} alt="img" width="32px" height="32px" />
+            )
+          }
+        />
+        {showPopUp && (
+          <animated.div
+            style={springProps}
+            ref={refPopUp}
+            id="tunnel"
+            className="main-popup-container-animate-start"
+          >
+            {showEnvError && <EnvironmentError color={color} />}
+            <div
+              className="popup-header-container"
+              style={{ borderBottomColor: color }}
+            >
+              {showDetails && (
+                <button
+                  ref={refBackButton}
+                  onClick={() => onClickBackButton()}
+                  className="header-back-button-style"
+                >
+                  <ArrowRightIcon color={color} />
+                </button>
+              )}
+              <div className="header-text-container">
+                <Text className="header-text-style" label="Bops Insight" />
+              </div>
+            </div>
+            <div className="main-item-list-container">
+              {showDetails ? (
+                <ItemDetail
+                  id="detailif"
+                  ref={ref}
                   color={color}
+                  itemData={itemDataList[selectedItem]}
                 />
-              ))
-            )}
-          </div>
-        </div>
-      )}
-    </div>
+              ) : (
+                itemList.map((item, index) => (
+                  <ListItem
+                    item={item}
+                    key={index}
+                    onClickList={() => {
+                      onClickList(item.title);
+                      setSelectedItem(index);
+                    }}
+                    color={color}
+                  />
+                ))
+              )}
+            </div>
+          </animated.div>
+        )}
+      </div>
+    </>
   );
 };
 
