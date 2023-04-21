@@ -8,7 +8,7 @@ import ArrowRightIcon from "../../assets/icons/arrowRightIcon";
 import "./AiAssistant.scss";
 import EnvironmentError from "../EnvironmentError";
 import { MyDataListEngine } from "../DataListEngine";
-import { useSpring, animated, useTransition } from "@react-spring/web";
+import { useSpring, animated } from "@react-spring/web";
 
 export type AiAssistantProps = {
   itemList: ItemData[];
@@ -19,6 +19,7 @@ export type AiAssistantProps = {
 export type ItemData = {
   title: string;
   subtitle: string;
+  prompt: string;
   payload: string;
 };
 
@@ -39,8 +40,6 @@ const AiAssistant = ({ itemList, color, image }: AiAssistantProps) => {
   const refPopUp = useRef<HTMLDivElement>(null);
   const refBackButton = useRef<HTMLButtonElement>(null);
 
-  const prefacePrompt = `Justify the policy action in this json data using the other data in the obejct and respond very concisely and use numbers: \n\n`;
-
   // Create a useEffect hook that fills itemDataList wiht ItemData objects from the itemList
   useEffect(() => {
     const tempItemDataList: ItemData[] = [];
@@ -48,7 +47,8 @@ const AiAssistant = ({ itemList, color, image }: AiAssistantProps) => {
       tempItemDataList.push({
         title: item.title,
         subtitle: item.subtitle,
-        payload: prefacePrompt + item.payload,
+        prompt: item.prompt,
+        payload: item.payload,
       });
     });
     setItemDataList(tempItemDataList);

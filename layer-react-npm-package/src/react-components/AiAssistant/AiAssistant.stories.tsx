@@ -13,28 +13,9 @@ export const Default = Template.bind({});
 Default.args = {
   itemList : [
     {
-      title: "Purchase More:",
-      subtitle: "PRINGLES SOUR CREAM & ONION PO",
-    },
-    {
-      title: "Purchase More:",
-      subtitle: "PRINGLES SOUR CREAM & ONION PO",
-    },
-    {
-      title: "Purchase More:",
-      subtitle: "PRINGLES SOUR CREAM & ONION PO",
-    },
-    {
-      title: "Purchase More:",
-      subtitle: "PRINGLES SOUR CREAM & ONION PO",
-    },
-    {
-      title: "Purchase More:",
-      subtitle: "PRINGLES SOUR CREAM & ONION PO",
-    },
-    {
-      title: "Purchase More:",
-      subtitle: "PRINGLES SOUR CREAM & ONION PO",
+      title: "",
+      subtitle: "",
+      payload: "",
     },
   ],
   color: "#7a6bf2",
