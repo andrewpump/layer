@@ -119,7 +119,7 @@ const AiAssistant = ({ itemList, color, image }: AiAssistantProps) => {
         setShowArrowButton(false);
         const timer = setTimeout(() => {
           setShowDetails(false);
-        }, 750);
+        }, 500);
         return () => clearTimeout(timer);
       }
     } else {
