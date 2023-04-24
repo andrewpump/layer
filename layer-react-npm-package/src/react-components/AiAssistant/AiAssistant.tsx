@@ -36,6 +36,7 @@ const AiAssistant = ({ itemList, color, image }: AiAssistantProps) => {
   const [itemDataList, setItemDataList] = useState<ItemData[]>([]);
   const [selectedItem, setSelectedItem] = useState<number>(0);
   const [showDiv, setShowDiv] = useState(false);
+  const [showArrowButton, setShowArrowButton] = useState(false);
   const [divHeight, setDivHeight] = useState(0);
   const ref = useRef<any>();
   const refPopUp = useRef<HTMLDivElement>(null);
@@ -59,11 +60,20 @@ const AiAssistant = ({ itemList, color, image }: AiAssistantProps) => {
     height: showDiv ?`${divHeight}px` : "0",
     opacity: showDiv ? 1 : 0,
     overflow: "hidden",
-    config: { tension: 110, friction: 80 },
+    config: { tension: 80, friction: 50 },
+  });
+
+  const arrowButtonSpringProps = useSpring({
+    opacity: showArrowButton ? 1 : 0,
+    marginRight: showArrowButton ? "0" :"-34px" ,
+    config: { tension: 60, friction: 15 },
   });
 
   const onClickList = async (title: string) => {
     setShowDetails(true);
+    setTimeout(() => {
+    setShowArrowButton(true);
+    }, 1700);
     try {
       setDivHeight(DEAFULT_HEIGHT);
       const res = await engine.generateText(title);
@@ -78,6 +88,7 @@ const AiAssistant = ({ itemList, color, image }: AiAssistantProps) => {
   };
 
   const onClickPopupButton = () => {
+    setShowArrowButton(false);
     setShowDiv(!showDiv);
     setDivHeight(400);
     if (showPopUp) {
@@ -96,18 +107,23 @@ const AiAssistant = ({ itemList, color, image }: AiAssistantProps) => {
 
   const onClickBackButton = () => {
     setShowDetails(true);
+    setTimeout(() => {
     setDivHeight(400);
+    }, 400);
+
     if (showDetails) {
       if (refBackButton.current) {
         refBackButton.current.className =
           "ai-assistant-main-popup-header-back-button-style-end";
         ref.current.log();
+        setShowArrowButton(false);
         const timer = setTimeout(() => {
           setShowDetails(false);
         }, 750);
         return () => clearTimeout(timer);
       }
     } else {
+      setShowArrowButton(false);
       setShowDetails(true);
     }
   };
@@ -139,17 +155,14 @@ const AiAssistant = ({ itemList, color, image }: AiAssistantProps) => {
               className="popup-header-container"
               style={{ borderBottomColor: color }}
             >
-              <button
-                style={{
-                  display: showDetails ? "inline-block" : "none",
-                  transition: "0.5s",
-                }}
+              <animated.button
+                style={arrowButtonSpringProps}
                 ref={refBackButton}
                 onClick={() => onClickBackButton()}
                 className="header-back-button-style"
               >
                 <ArrowRightIcon color={color} />
-              </button>
+              </animated.button>
 
               <div className="header-text-container">
                 <Text className="header-text-style" label="Bops Insight" />
