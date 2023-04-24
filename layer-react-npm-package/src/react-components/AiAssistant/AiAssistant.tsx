@@ -65,8 +65,8 @@ const AiAssistant = ({ itemList, color, image }: AiAssistantProps) => {
 
   const arrowButtonSpringProps = useSpring({
     opacity: showArrowButton ? 1 : 0,
-    marginRight: showArrowButton ? "0" :"-34px" ,
-    config: { tension: 60, friction: 15 },
+    marginRight: showArrowButton ? "0" : "-34px",
+    trans: [0, 1, 2],
   });
 
   const onClickList = async (title: string) => {
@@ -97,7 +97,7 @@ const AiAssistant = ({ itemList, color, image }: AiAssistantProps) => {
         const timer = setTimeout(() => {
           setShowDetails(false);
           setShowPopUp(false);
-        }, 750);
+        }, 500);
         return () => clearTimeout(timer);
       }
     } else {
