@@ -7,6 +7,7 @@ type AiAssistantProps = {
 type ItemData = {
     title: string;
     subtitle: string;
+    prompt: string;
     payload: string;
 };
 declare const AiAssistant: ({ itemList, color, image }: AiAssistantProps) => JSX.Element;
