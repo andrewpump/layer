@@ -28,4 +28,5 @@ export const Default = Template.bind({});
 Default.args = {
   color: 'blue',
   id: '1',
+  itemData:{title:'Title 1', subtitle:'Sub Title 1',prompt:'',payload:''}
 };
