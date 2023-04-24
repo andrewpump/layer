@@ -16,6 +16,7 @@ export type ItemDetailProps = {
   color: string;
   id: string;
   itemData: ItemData;
+  onSetHeight: (height: number) => void;
 };
 
 export type ItemDetailHandle = {
@@ -29,7 +30,7 @@ type ItemDisplay = {
 }
 
 const ItemDetail = forwardRef<ItemDetailHandle, ItemDetailProps>(
-  ({ color, id, itemData }, ref) => {
+  ({ color, id, itemData, onSetHeight }, ref) => {
     const refForDiv = useRef<HTMLDivElement>(null);
 
     const [item, setItem] = useState<ItemDisplay>({
@@ -49,7 +50,13 @@ const ItemDetail = forwardRef<ItemDetailHandle, ItemDetailProps>(
 
     // create a useEffect hook that calls generateText() when the component mounts
     useEffect(() => {
-      generateText();
+      (async () => {
+        await generateText();
+        const listDiv = document.querySelector(
+          ".main-item-list-container"
+        )?.clientHeight;
+        onSetHeight(listDiv || 0);
+      })();
     }, []);
 
 

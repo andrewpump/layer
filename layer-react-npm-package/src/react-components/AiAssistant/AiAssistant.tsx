@@ -36,11 +36,11 @@ const AiAssistant = ({ itemList, color, image }: AiAssistantProps) => {
   const [itemDataList, setItemDataList] = useState<ItemData[]>([]);
   const [selectedItem, setSelectedItem] = useState<number>(0);
   const [showDiv, setShowDiv] = useState(false);
-
+  const [divHeight, setDivHeight] = useState(0);
   const ref = useRef<any>();
   const refPopUp = useRef<HTMLDivElement>(null);
   const refBackButton = useRef<HTMLButtonElement>(null);
-
+ const DEAFULT_HEIGHT = 200
   // Create a useEffect hook that fills itemDataList wiht ItemData objects from the itemList
   useEffect(() => {
     const tempItemDataList: ItemData[] = [];
@@ -56,29 +56,35 @@ const AiAssistant = ({ itemList, color, image }: AiAssistantProps) => {
   }, [itemList]);
 
   const springProps = useSpring({
-    height: showDiv ? "427px" : "0",
+    height: showDiv ?`${divHeight}px` : "0",
     opacity: showDiv ? 1 : 0,
     overflow: "hidden",
     config: { tension: 110, friction: 80 },
   });
 
   const onClickList = async (title: string) => {
+    setShowDetails(true);
     try {
+      setDivHeight(DEAFULT_HEIGHT);
       const res = await engine.generateText(title);
     } catch (error) {
+      setDivHeight(DEAFULT_HEIGHT);
       console.log(error);
     }
+  };
 
-    setShowDetails(true);
+  const onSetHeight=(height:number)=>{
+    setDivHeight(height + 90);
   };
 
   const onClickPopupButton = () => {
     setShowDiv(!showDiv);
-    setShowDetails(false);
+    setDivHeight(400);
     if (showPopUp) {
       if (refPopUp.current) {
         refPopUp.current.className = "main-popup-container-animate-end";
         const timer = setTimeout(() => {
+          setShowDetails(false);
           setShowPopUp(false);
         }, 750);
         return () => clearTimeout(timer);
@@ -89,6 +95,8 @@ const AiAssistant = ({ itemList, color, image }: AiAssistantProps) => {
   };
 
   const onClickBackButton = () => {
+    setShowDetails(true);
+    setDivHeight(400);
     if (showDetails) {
       if (refBackButton.current) {
         refBackButton.current.className =
@@ -96,7 +104,7 @@ const AiAssistant = ({ itemList, color, image }: AiAssistantProps) => {
         ref.current.log();
         const timer = setTimeout(() => {
           setShowDetails(false);
-        }, 250);
+        }, 750);
         return () => clearTimeout(timer);
       }
     } else {
@@ -131,15 +139,18 @@ const AiAssistant = ({ itemList, color, image }: AiAssistantProps) => {
               className="popup-header-container"
               style={{ borderBottomColor: color }}
             >
-              {showDetails && (
-                <button
-                  ref={refBackButton}
-                  onClick={() => onClickBackButton()}
-                  className="header-back-button-style"
-                >
-                  <ArrowRightIcon color={color} />
-                </button>
-              )}
+              <button
+                style={{
+                  display: showDetails ? "inline-block" : "none",
+                  transition: "0.5s",
+                }}
+                ref={refBackButton}
+                onClick={() => onClickBackButton()}
+                className="header-back-button-style"
+              >
+                <ArrowRightIcon color={color} />
+              </button>
+
               <div className="header-text-container">
                 <Text className="header-text-style" label="Bops Insight" />
               </div>
@@ -151,6 +162,7 @@ const AiAssistant = ({ itemList, color, image }: AiAssistantProps) => {
                   ref={ref}
                   color={color}
                   itemData={itemDataList[selectedItem]}
+                  onSetHeight={onSetHeight}
                 />
               ) : (
                 itemList.map((item, index) => (
