@@ -34,6 +34,7 @@ const AiAssistant = ({ itemList, color, image }: AiAssistantProps) => {
   const [showEnvError, setShowEnvError] = useState(false);
   const [itemDataList, setItemDataList] = useState<ItemData[]>([]);
   const [selectedItem, setSelectedItem] = useState<number>(0);
+  const [showDiv, setShowDiv] = useState(false);
 
   const ref = useRef<any>();
   const refPopUp = useRef<HTMLDivElement>(null);
@@ -54,6 +55,13 @@ const AiAssistant = ({ itemList, color, image }: AiAssistantProps) => {
     setItemDataList(tempItemDataList);
   }, [itemList]);
 
+  const springProps = useSpring({
+    height: showDiv ? "427px" : "0",
+    opacity: showDiv ? 1 : 0,
+    overflow: "hidden",
+    config: { tension: 110, friction: 80 },
+  });
+
   const onClickList = async (title: string) => {
     try {
       const res = await engine.generateText(title);
@@ -72,7 +80,7 @@ const AiAssistant = ({ itemList, color, image }: AiAssistantProps) => {
         refPopUp.current.className = "main-popup-container-animate-end";
         const timer = setTimeout(() => {
           setShowPopUp(false);
-        }, 250);
+        }, 750);
         return () => clearTimeout(timer);
       }
     } else {
@@ -95,15 +103,6 @@ const AiAssistant = ({ itemList, color, image }: AiAssistantProps) => {
       setShowDetails(true);
     }
   };
-
-  const [showDiv, setShowDiv] = useState(false);
-
-  const springProps = useSpring({
-    height: showDiv ? "427px" : "0",
-    opacity: showDiv ? 1 : 0,
-    overflow: "hidden",
-    config: { tension: 110, friction: 80 },
-  });
 
   return (
     <>
