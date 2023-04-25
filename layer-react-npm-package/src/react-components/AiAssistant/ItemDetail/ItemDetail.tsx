@@ -56,12 +56,14 @@ const ItemDetail = forwardRef<ItemDetailHandle, ItemDetailProps>(
     }, []);
 
     useEffect(() => {
-      if (item?.content.length > 550) {
-        onSetHeight(400);
-      } else if (item?.content.length > 400 && item?.content.length < 550) {
-        onSetHeight(320);
-      } else {
-        onSetHeight(270);
+      if (item?.content.length > 18) {
+        if (item?.content.length > 550) {
+          onSetHeight(400);
+        } else if (item?.content.length > 400 && item?.content.length < 550) {
+          onSetHeight(320);
+        } else {
+          onSetHeight(270);
+        }
       }
     }, [item]);
 
