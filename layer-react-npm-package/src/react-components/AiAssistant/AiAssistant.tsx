@@ -14,6 +14,8 @@ export type AiAssistantProps = {
   itemList: ItemData[];
   color: string;
   image: string;
+  showPopUp?: boolean;
+  showButton: boolean;
 };
 
 export type ItemData = {
@@ -23,14 +25,14 @@ export type ItemData = {
   payload: string;
 };
 
-const AiAssistant = ({ itemList, color, image }: AiAssistantProps) => {
+const AiAssistant = ({ itemList, color, image, showPopUp, showButton }: AiAssistantProps) => {
   const engine = new MyDataListEngine();
 
   if (!engine.validateKeys()) {
     return <EnvironmentError color="#FF0000" />;
   }
 
-  const [showPopUp, setShowPopUp] = useState(false);
+  const [showWidget, setShowWidget] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [showEnvError, setShowEnvError] = useState(false);
   const [itemDataList, setItemDataList] = useState<ItemData[]>([]);
@@ -55,6 +57,12 @@ const AiAssistant = ({ itemList, color, image }: AiAssistantProps) => {
     });
     setItemDataList(tempItemDataList);
   }, [itemList]);
+
+  useEffect(() => {
+    if (showPopUp) {
+      onClickPopupButton();
+    }
+  }, []);
 
   const springProps = useSpring({
     height: showDiv ?`${divHeight}px` : "0",
@@ -91,17 +99,17 @@ const AiAssistant = ({ itemList, color, image }: AiAssistantProps) => {
     setShowArrowButton(false);
     setShowDiv(!showDiv);
     setDivHeight(400);
-    if (showPopUp) {
+    if (showWidget) {
       if (refPopUp.current) {
         refPopUp.current.className = "main-popup-container-animate-end";
         const timer = setTimeout(() => {
           setShowDetails(false);
-          setShowPopUp(false);
+          setShowWidget(false);
         }, 500);
         return () => clearTimeout(timer);
       }
     } else {
-      setShowPopUp(true);
+      setShowWidget(true);
     }
   };
 
@@ -131,19 +139,22 @@ const AiAssistant = ({ itemList, color, image }: AiAssistantProps) => {
   return (
     <>
       <div className="ai-assistant-main-container">
-        <Button
-          style={{ backgroundColor: color }}
-          className="main-popup-button"
-          onClick={() => onClickPopupButton()}
-          child={
-            showPopUp ? (
-              <CrossIcon color="#ffffff" />
-            ) : (
-              <img src={image} alt="img" width="32px" height="32px" />
-            )
-          }
-        />
-        {showPopUp && (
+        {showButton && (
+          <Button
+            style={{ backgroundColor: color }}
+            className="main-popup-button"
+            onClick={() => onClickPopupButton()}
+            child={
+              showWidget ? (
+                <CrossIcon color="#ffffff" />
+              ) : (
+                <img src={image} alt="img" width="32px" height="32px" />
+              )
+            }
+          />
+        )}
+
+        {showWidget && (
           <animated.div
             style={springProps}
             ref={refPopUp}
