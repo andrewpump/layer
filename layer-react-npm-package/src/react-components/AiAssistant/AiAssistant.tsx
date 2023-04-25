@@ -92,7 +92,7 @@ const AiAssistant = ({ itemList, color, image, showPopUp, showButton }: AiAssist
   };
 
   const onSetHeight=(height:number)=>{
-    setDivHeight(height + 90);
+    setDivHeight(height);
   };
 
   const onClickPopupButton = () => {

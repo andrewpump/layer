@@ -52,12 +52,18 @@ const ItemDetail = forwardRef<ItemDetailHandle, ItemDetailProps>(
     useEffect(() => {
       (async () => {
         await generateText();
-        const listDiv = document.querySelector(
-          ".main-item-list-container"
-        )?.clientHeight;
-        onSetHeight(listDiv || 0);
       })();
     }, []);
+
+    useEffect(() => {
+      if (item?.content.length > 550) {
+        onSetHeight(400);
+      } else if (item?.content.length > 400 && item?.content.length < 550) {
+        onSetHeight(320);
+      } else {
+        onSetHeight(270);
+      }
+    }, [item]);
 
 
     // call openai streaming api and update item content with the response
