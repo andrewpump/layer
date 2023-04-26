@@ -143,14 +143,20 @@ const AiAssistant = ({
       }
     } else {
       setShowWidget(true);
-      try {
         const prompts = itemList.map((x) => x.prompt + x.payload);
         const response = await engine.generateTextList(prompts);
-        setInsightList(response);
-        // receiveInsights(response)
-      } catch (error) {
-        console.error("error", error);
-      }
+
+        if(response.length){
+          setInsightList(response);
+          const filteredResponse = response.filter((x:any)=>!x.error);
+          const insights = Object.assign(
+            {},
+            ...filteredResponse.map((x: any) => ({
+              [x.id]: x.choices[0]?.message?.content,
+            }))
+          );
+          receiveInsights(insights);
+        }
     }
   };
 

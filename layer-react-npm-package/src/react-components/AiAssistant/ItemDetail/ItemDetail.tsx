@@ -111,7 +111,7 @@ const ItemDetail = forwardRef<ItemDetailHandle, ItemDetailProps>(
             <Text className="title-text-style" label={itemData.title} />
             <Text className="subtitle-text-style" label={itemData.subtitle} />
           </div>
-          <Text className="detail-text-style" label={item.content} />
+          <Text className="detail-text-style" label={item.content || 'getting insight...'} />
         </div>
       </div>
     );
