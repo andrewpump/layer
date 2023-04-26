@@ -11,6 +11,7 @@ import { MyDataListEngine } from "../DataListEngine";
 import { useSpring, animated } from "@react-spring/web";
 
 export type AiAssistantProps = {
+  title: string;
   itemList: ItemData[];
   color: string;
   image: string;
@@ -25,7 +26,7 @@ export type ItemData = {
   payload: string;
 };
 
-const AiAssistant = ({ itemList, color, image, showPopUp, showButton }: AiAssistantProps) => {
+const AiAssistant = ({ title, itemList, color, image, showPopUp, showButton }: AiAssistantProps) => {
   const engine = new MyDataListEngine();
 
   if (!engine.validateKeys()) {
@@ -176,7 +177,7 @@ const AiAssistant = ({ itemList, color, image, showPopUp, showButton }: AiAssist
               </animated.button>
 
               <div className="header-text-container">
-                <Text className="header-text-style" label="Bops Insight" />
+                <Text className="header-text-style" label={title.toLowerCase()} />
               </div>
             </div>
             <div className="main-item-list-container">

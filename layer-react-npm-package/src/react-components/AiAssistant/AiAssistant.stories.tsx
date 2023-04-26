@@ -11,6 +11,7 @@ const Template: Story<AiAssistantProps> = (args) => <AiAssistant {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {
+  title: "Bops Insight",
   itemList : [
     {
       title: "Title 1",
