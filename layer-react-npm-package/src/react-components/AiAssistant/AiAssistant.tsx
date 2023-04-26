@@ -17,6 +17,8 @@ export type AiAssistantProps = {
   image: string;
   showPopUp?: boolean;
   showButton: boolean;
+  placeholder: string;
+  receiveInsights: (insights: { [id: string]: string }) => void;
 };
 
 export type ItemData = {
@@ -24,11 +26,21 @@ export type ItemData = {
   subtitle: string;
   prompt: string;
   payload: string;
+  content: string;
 };
 
-const AiAssistant = ({ title, itemList, color, image, showPopUp, showButton }: AiAssistantProps) => {
+const AiAssistant = ({
+  title,
+  itemList,
+  color,
+  image,
+  showPopUp,
+  showButton,
+  placeholder,
+  receiveInsights,
+}: AiAssistantProps) => {
   const engine = new MyDataListEngine();
-
+ 
   if (!engine.validateKeys()) {
     return <EnvironmentError color="#FF0000" />;
   }
@@ -36,15 +48,18 @@ const AiAssistant = ({ title, itemList, color, image, showPopUp, showButton }: A
   const [showWidget, setShowWidget] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [showEnvError, setShowEnvError] = useState(false);
+  const [updateItemdata, setUpdateItemData] = useState(false);
   const [itemDataList, setItemDataList] = useState<ItemData[]>([]);
   const [selectedItem, setSelectedItem] = useState<number>(0);
   const [showDiv, setShowDiv] = useState(false);
   const [showArrowButton, setShowArrowButton] = useState(false);
   const [divHeight, setDivHeight] = useState(0);
+  const [insightList, setInsightList] = useState<any>([]);
   const ref = useRef<any>();
   const refPopUp = useRef<HTMLDivElement>(null);
   const refBackButton = useRef<HTMLButtonElement>(null);
- const DEAFULT_HEIGHT = 200
+  const DEAFULT_HEIGHT = 200;
+
   // Create a useEffect hook that fills itemDataList wiht ItemData objects from the itemList
   useEffect(() => {
     const tempItemDataList: ItemData[] = [];
@@ -54,10 +69,25 @@ const AiAssistant = ({ title, itemList, color, image, showPopUp, showButton }: A
         subtitle: item.subtitle,
         prompt: item.prompt,
         payload: item.payload,
+        content:'',
       });
     });
     setItemDataList(tempItemDataList);
+    setUpdateItemData(!updateItemdata);
   }, [itemList]);
+
+  // Create a useEffect hook that fills insightList wiht insightList coming from api response 
+  useEffect(() => {
+    if (insightList.length && itemDataList.length) {
+      insightList.forEach((item: any, index: number) => {
+        itemDataList[index].content = !item?.error
+          ? item?.choices[0]?.message?.content
+          : "";
+      });
+      setItemDataList(itemDataList);
+      setUpdateItemData(!updateItemdata);
+    }
+  }, [insightList]);
 
   useEffect(() => {
     if (showPopUp) {
@@ -66,7 +96,7 @@ const AiAssistant = ({ title, itemList, color, image, showPopUp, showButton }: A
   }, []);
 
   const springProps = useSpring({
-    height: showDiv ?`${divHeight}px` : "0",
+    height: showDiv ? `${divHeight}px` : "0",
     opacity: showDiv ? 1 : 0,
     overflow: "hidden",
     config: { tension: 40, friction: 15 },
@@ -81,22 +111,23 @@ const AiAssistant = ({ title, itemList, color, image, showPopUp, showButton }: A
   const onClickList = async (title: string) => {
     setShowDetails(true);
     setTimeout(() => {
-    setShowArrowButton(true);
+      setShowArrowButton(true);
     }, 1700);
     try {
       setDivHeight(DEAFULT_HEIGHT);
-      const res = await engine.generateText(title);
+      itemDataList[selectedItem].content =
+        insightList[selectedItem]?.choices[0].message.content;
     } catch (error) {
       setDivHeight(DEAFULT_HEIGHT);
       console.log(error);
     }
   };
 
-  const onSetHeight=(height:number)=>{
+  const onSetHeight = (height: number) => {
     setDivHeight(height);
   };
 
-  const onClickPopupButton = () => {
+  const onClickPopupButton = async () => {
     setShowArrowButton(false);
     setShowDiv(!showDiv);
     setDivHeight(400);
@@ -105,19 +136,28 @@ const AiAssistant = ({ title, itemList, color, image, showPopUp, showButton }: A
         refPopUp.current.className = "main-popup-container-animate-end";
         const timer = setTimeout(() => {
           setShowDetails(false);
+          setInsightList([]);
           setShowWidget(false);
         }, 500);
         return () => clearTimeout(timer);
       }
     } else {
       setShowWidget(true);
+      try {
+        const prompts = itemList.map((x) => x.prompt + x.payload);
+        const response = await engine.generateTextList(prompts);
+        setInsightList(response);
+        // receiveInsights(response)
+      } catch (error) {
+        console.error("error", error);
+      }
     }
   };
 
   const onClickBackButton = () => {
     setShowDetails(true);
     setTimeout(() => {
-    setDivHeight(400);
+      setDivHeight(400);
     }, 400);
 
     if (showDetails) {
@@ -177,7 +217,10 @@ const AiAssistant = ({ title, itemList, color, image, showPopUp, showButton }: A
               </animated.button>
 
               <div className="header-text-container">
-                <Text className="header-text-style" label={title.toLowerCase()} />
+                <Text
+                  className="header-text-style"
+                  label={title.toLowerCase()}
+                />
               </div>
             </div>
             <div className="main-item-list-container">
@@ -187,7 +230,9 @@ const AiAssistant = ({ title, itemList, color, image, showPopUp, showButton }: A
                   ref={ref}
                   color={color}
                   itemData={itemDataList[selectedItem]}
+                  updateItemData={updateItemdata}
                   onSetHeight={onSetHeight}
+                  placeholder={placeholder}
                 />
               ) : (
                 itemList.map((item, index) => (

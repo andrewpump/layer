@@ -1,22 +1,23 @@
 import React, {
   useEffect,
-    useState,
-    useRef,
-    forwardRef,
-    useImperativeHandle,
-  } from "react";
+  useState,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import Text from "../../../react-components/Text";
 import "../../../assets/styles/styles.scss";
 import "./ItemDetail.scss";
-import { ItemData } from "../AiAssistant"
+import { ItemData } from "../AiAssistant";
 import { OpenAIStream } from "../../../openai/gpt4-request";
-
 
 export type ItemDetailProps = {
   color: string;
   id: string;
   itemData: ItemData;
+  updateItemData: boolean;
   onSetHeight: (height: number) => void;
+  placeholder: string;
 };
 
 export type ItemDetailHandle = {
@@ -27,16 +28,15 @@ type ItemDisplay = {
   title: string;
   subtitle: string;
   content: string;
-}
+};
 
 const ItemDetail = forwardRef<ItemDetailHandle, ItemDetailProps>(
-  ({ color, id, itemData, onSetHeight }, ref) => {
+  ({ color, id, itemData, onSetHeight, placeholder, updateItemData }, ref) => {
     const refForDiv = useRef<HTMLDivElement>(null);
-
     const [item, setItem] = useState<ItemDisplay>({
       title: itemData.title,
       subtitle: itemData.subtitle,
-      content: "getting insight...",
+      content: itemData.content || placeholder,
     });
 
     useImperativeHandle(ref, () => ({
@@ -48,25 +48,30 @@ const ItemDetail = forwardRef<ItemDetailHandle, ItemDetailProps>(
       },
     }));
 
-    // create a useEffect hook that calls generateText() when the component mounts
     useEffect(() => {
-      (async () => {
-        await generateText();
-      })();
-    }, []);
+      setItem({
+        ...itemData,
+        content: itemData.content || placeholder,
+      });
 
-    useEffect(() => {
-      if (item?.content.length > 18) {
-        if (item?.content.length > 550) {
+      if (itemData?.content && itemData?.content.length > 18) {
+        if (itemData?.content.length > 550) {
           onSetHeight(400);
-        } else if (item?.content.length > 400 && item?.content.length < 550) {
+        } else if (
+          itemData?.content.length > 300 &&
+          itemData?.content.length < 550
+        ) {
           onSetHeight(320);
-        } else {
+        } else if (
+          itemData?.content.length > 150 &&
+          itemData?.content.length < 300
+        ) {
           onSetHeight(270);
+        } else {
+          onSetHeight(200);
         }
       }
-    }, [item]);
-
+    }, [updateItemData]);
 
     // call openai streaming api and update item content with the response
     const generateText = async () => {
@@ -85,14 +90,12 @@ const ItemDetail = forwardRef<ItemDetailHandle, ItemDetailProps>(
         }
       );
       const data = await res.json();
-      console.log("Data: ", data);
       setItem({
         title: itemData.title,
         subtitle: itemData.subtitle,
         content: data.choices[0].message.content,
       });
     };
-
 
     return (
       <div
@@ -106,15 +109,9 @@ const ItemDetail = forwardRef<ItemDetailHandle, ItemDetailProps>(
             className="ai-assistant-item-details-heading-text-container "
           >
             <Text className="title-text-style" label={itemData.title} />
-            <Text
-              className="subtitle-text-style"
-              label={itemData.subtitle}
-            />
+            <Text className="subtitle-text-style" label={itemData.subtitle} />
           </div>
-          <Text
-            className="detail-text-style"
-            label={item.content}
-          />
+          <Text className="detail-text-style" label={item.content} />
         </div>
       </div>
     );

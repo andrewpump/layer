@@ -35,29 +35,22 @@ export class MyDataListEngine implements DataListEngine {
 
   async generateText(prompt: string): Promise<string> {
 
-    console.log("Prompt:", prompt)
-
-    // Call the openai API to generate text using openAIKey and axios
-    const response = await axios.post(
-      "https://api.openai.com/v1/engines/davinci/completions",
-      {
-        prompt: prompt,
-        max_tokens: 100,
-        temperature: 0.7,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0,
-        stop: ["\n", "  ", "  "],
+    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${this.openAIKey}`,
+        "Content-Type": "application/json",
       },
-      {
-        headers: {
-          Authorization: `Bearer ${this.openAIKey}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    
-    return response.data.choices[0].text.trim();
+      body: JSON.stringify({
+        model: "gpt-3.5-turbo",
+        messages: [
+          { role: "user", content: prompt },
+        ],
+      }),
+    });
+
+    const data = await res.json();
+    return data;
   }
 
   async generateTextList(prompts: string[]): Promise<string[]> {
