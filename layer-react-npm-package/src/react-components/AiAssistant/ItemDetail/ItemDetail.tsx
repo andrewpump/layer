@@ -36,7 +36,7 @@ const ItemDetail = forwardRef<ItemDetailHandle, ItemDetailProps>(
     const [item, setItem] = useState<ItemDisplay>({
       title: itemData.title,
       subtitle: itemData.subtitle,
-      content: "generating text...",
+      content: "getting insight...",
     });
 
     useImperativeHandle(ref, () => ({
