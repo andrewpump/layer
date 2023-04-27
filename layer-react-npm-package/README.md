@@ -27,7 +27,7 @@ The library needs to be configured with your account's secret key, which is avai
 
 <br>
 
-You can call an `AiAssistant` component by passing `itemList`, `color` and `image` props. for example:
+You can call an `AiAssistant` component by passing `title`, `placeholder`, `itemList`, `color`, `image`, `receiveInsights`, `showButton` and `showPopUp` props. for example:
 
 ```javascript
 const fakeData = [
@@ -45,7 +45,16 @@ const fakeData = [
 
 return (
   <div className="main-background">
-    <AiAssistant itemList={fakeData} color="#7b6cf3" image={DemoImage} />
+    <AiAssistant
+      title="Bops Insights"
+      placeholder="getting insight..."
+      itemList={fakeData}
+      color="#7b6cf3"
+      image={DemoImage}
+      showButton={true}
+      showPopUp={false}
+      receiveInsights={(insights) => console.log("insightsData", insights)}
+    />
   </div>
 );
 ```
