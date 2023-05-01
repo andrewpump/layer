@@ -53,7 +53,7 @@ return (
       image={DemoImage}
       showButton={true}
       showPopUp={false}
-      receiveInsights={(insights) => console.log("insightsData", insights)}
+      receiveInsights={(insights) => console.log(insights)}
     />
   </div>
 );

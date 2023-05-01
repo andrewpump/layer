@@ -99,7 +99,7 @@ const AiAssistant = ({
     height: showDiv ? `${divHeight}px` : "0",
     opacity: showDiv ? 1 : 0,
     overflow: "hidden",
-    config: { tension: 40, friction: 15 },
+    config: { tension: 60, friction: 10 },
   });
 
   const arrowButtonSpringProps = useSpring({
