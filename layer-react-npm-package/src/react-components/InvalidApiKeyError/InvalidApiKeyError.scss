@@ -1,0 +1,41 @@
+.environment-error-main-container-style {
+    position: absolute;
+    inset: 0px 0px 0px 0px;
+    background: rgba(0, 0, 0, 0.86);
+    padding: 24px;
+    .top-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding-bottom: 20px;
+    }
+    .heading-text-style {
+      font-weight: 700;
+      font-size: 26px;
+      color: #fff;
+    }
+    .bottom-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background-color:#1e1e1e;
+      padding: 16px;
+    }
+    .text-style {
+      font-weight: 400;
+      font-size: 20px;
+      color: #fff;
+      line-height: 1.7;
+      text-align: center;
+
+    }
+    .bottom-container-center{
+      height: 50%;
+      width: 78%;
+      margin: 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+  

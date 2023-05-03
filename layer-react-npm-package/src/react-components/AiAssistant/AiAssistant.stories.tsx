@@ -34,4 +34,5 @@ Default.args = {
   image: myImage,
   showPopUp: false,
   showButton: true,
+  receiveInsights: (insights) => console.log(insights),
 };

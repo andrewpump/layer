@@ -7,6 +7,7 @@ import CrossIcon from "../../assets/icons/crossIcon";
 import ArrowRightIcon from "../../assets/icons/arrowRightIcon";
 import "./AiAssistant.scss";
 import EnvironmentError from "../EnvironmentError";
+import InvalidApiKeyError from "../InvalidApiKeyError";
 import { MyDataListEngine } from "../DataListEngine";
 import { useSpring, animated } from "@react-spring/web";
 
@@ -28,7 +29,10 @@ export type ItemData = {
   payload: string;
   content: string;
 };
-
+const errorView = {
+  title: "401 Error",
+  message:"This is likely a problem with your OpenAI API key. Check if your api key is still enabled."
+}
 const AiAssistant = ({
   title,
   itemList,
@@ -40,14 +44,14 @@ const AiAssistant = ({
   receiveInsights,
 }: AiAssistantProps) => {
   const engine = new MyDataListEngine();
- 
+
   if (!engine.validateKeys()) {
     return <EnvironmentError color="#FF0000" />;
   }
-
   const [showWidget, setShowWidget] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [showEnvError, setShowEnvError] = useState(false);
+  const [showStatusError, setShowStatusError] = useState(false);
   const [updateItemdata, setUpdateItemData] = useState(false);
   const [itemDataList, setItemDataList] = useState<ItemData[]>([]);
   const [selectedItem, setSelectedItem] = useState<number>(0);
@@ -76,7 +80,7 @@ const AiAssistant = ({
     setUpdateItemData(!updateItemdata);
   }, [itemList]);
 
-  // Create a useEffect hook that fills insightList wiht insightList coming from api response 
+  // Create a useEffect hook that fills insightList wiht insightList coming from api response
   useEffect(() => {
     if (insightList.length && itemDataList.length) {
       insightList.forEach((item: any, index: number) => {
@@ -90,10 +94,12 @@ const AiAssistant = ({
   }, [insightList]);
 
   useEffect(() => {
-    if (showPopUp) {
-      onClickPopupButton();
-    }
-  }, []);
+    onClickPopupButton();
+  }, [showWidget]);
+
+  useEffect(() => {
+    setShowWidget(showPopUp || false);
+  }, [showPopUp]);
 
   const springProps = useSpring({
     height: showDiv ? `${divHeight}px` : "0",
@@ -104,6 +110,7 @@ const AiAssistant = ({
 
   const arrowButtonSpringProps = useSpring({
     opacity: showArrowButton ? 1 : 0,
+    display: showArrowButton ? "inline-block" : "none",
     marginRight: showArrowButton ? "0" : "-34px",
     trans: [0, 1, 2],
   });
@@ -129,24 +136,26 @@ const AiAssistant = ({
 
   const onClickPopupButton = async () => {
     setShowArrowButton(false);
-    setShowDiv(!showDiv);
     setDivHeight(400);
-    if (showWidget) {
+    if (!showWidget) {
+      setShowDiv(false);
       if (refPopUp.current) {
         refPopUp.current.className = "main-popup-container-animate-end";
         const timer = setTimeout(() => {
           setShowDetails(false);
           setInsightList([]);
-          setShowWidget(false);
         }, 500);
         return () => clearTimeout(timer);
       }
     } else {
-      setShowWidget(true);
+      setShowDiv(true);
+      if (refPopUp.current) {
+        refPopUp.current.className = "main-popup-container-animate-start";
+      }
+      if (await validateApiKey()) {
         const prompts = itemList.map((x) => x.prompt + x.payload);
         const response = await engine.generateTextList(prompts);
-
-        if(response.length){
+       if(response.length){
           setInsightList(response);
           const filteredResponse = response.filter((x:any)=>!x.error);
           const insights = Object.assign(
@@ -157,7 +166,21 @@ const AiAssistant = ({
           );
           receiveInsights(insights);
         }
-    }
+      } else {
+        setShowStatusError(true);
+      }
+      }
+  };
+
+  const validateApiKey = async () => {
+    const res = await fetch("https://api.openai.com/v1/models", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${engine.openAIKey}`,
+      },
+    });
+    return res?.status === 401 ? false : true;
   };
 
   const onClickBackButton = () => {
@@ -182,7 +205,6 @@ const AiAssistant = ({
       setShowDetails(true);
     }
   };
-
   return (
     <>
       <div className="ai-assistant-main-container">
@@ -190,7 +212,7 @@ const AiAssistant = ({
           <Button
             style={{ backgroundColor: color }}
             className="main-popup-button"
-            onClick={() => onClickPopupButton()}
+            onClick={() => setShowWidget(!showWidget)}
             child={
               showWidget ? (
                 <CrossIcon color="#ffffff" />
@@ -200,62 +222,64 @@ const AiAssistant = ({
             }
           />
         )}
-
-        {showWidget && (
-          <animated.div
-            style={springProps}
-            ref={refPopUp}
-            id="tunnel"
-            className="main-popup-container-animate-start"
-          >
-            {showEnvError && <EnvironmentError color={color} />}
-            <div
-              className="popup-header-container"
-              style={{ borderBottomColor: color }}
-            >
-              <animated.button
-                style={arrowButtonSpringProps}
-                ref={refBackButton}
-                onClick={() => onClickBackButton()}
-                className="header-back-button-style"
+        <animated.div
+          style={springProps}
+          ref={refPopUp}
+          id="tunnel"
+          className="main-popup-container-animate-start"
+        >
+          {showEnvError && <EnvironmentError color={color} />}
+          {showStatusError && <InvalidApiKeyError color={color} errorView={errorView}/>}
+          {!showEnvError && !showStatusError && (
+            <>
+              <div
+                className="popup-header-container"
+                style={{ borderBottomColor: color }}
               >
-                <ArrowRightIcon color={color} />
-              </animated.button>
+                <animated.button
+                  style={arrowButtonSpringProps}
+                  ref={refBackButton}
+                  onClick={() => onClickBackButton()}
+                  className="header-back-button-style"
+                >
+                  <ArrowRightIcon color={color} />
+                </animated.button>
 
-              <div className="header-text-container">
-                <Text
-                  className="header-text-style"
-                  label={title.toLowerCase()}
-                />
-              </div>
-            </div>
-            <div className="main-item-list-container">
-              {showDetails ? (
-                <ItemDetail
-                  id="detailif"
-                  ref={ref}
-                  color={color}
-                  itemData={itemDataList[selectedItem]}
-                  updateItemData={updateItemdata}
-                  onSetHeight={onSetHeight}
-                  placeholder={placeholder}
-                />
-              ) : (
-                itemList.map((item, index) => (
-                  <ListItem
-                    item={item}
-                    key={index}
-                    onClickList={() => {
-                      onClickList(item.title);
-                      setSelectedItem(index);
-                    }}
-                    color={color}
+                <div className="header-text-container">
+                  <Text
+                    className="header-text-style"
+                    label={title.toLowerCase()}
                   />
-                ))
-              )}
-            </div>
-          </animated.div>
-        )}
+                </div>
+              </div>
+              <div className="main-item-list-container">
+                {showDetails ? (
+                  <ItemDetail
+                    id="detailif"
+                    ref={ref}
+                    color={color}
+                    itemData={itemDataList[selectedItem]}
+                    updateItemData={updateItemdata}
+                    onSetHeight={onSetHeight}
+                    placeholder={placeholder}
+                  />
+                ) : (
+                  itemList.map((item, index) => (
+                    <ListItem
+                      item={item}
+                      key={index}
+                      onClickList={() => {
+                        onClickList(item.title);
+                        setSelectedItem(index);
+                      }}
+                      color={color}
+                    />
+                  ))
+                )}
+              </div>
+            </>
+          )}
+        </animated.div>
       </div>
     </>
   );
