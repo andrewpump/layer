@@ -31,8 +31,9 @@ export type ItemData = {
 };
 const errorView = {
   title: "401 Error",
-  message:"This is likely a problem with your OpenAI API key. Check if your api key is still enabled."
-}
+  message:
+    "This is likely a problem with your OpenAI API key. Check if your api key is still enabled.",
+};
 const AiAssistant = ({
   title,
   itemList,
@@ -59,6 +60,11 @@ const AiAssistant = ({
   const [showArrowButton, setShowArrowButton] = useState(false);
   const [divHeight, setDivHeight] = useState(0);
   const [insightList, setInsightList] = useState<any>([]);
+  const [failedRequestIndexes, setFailedRequestIndexes] = useState<any>([]);
+  const [errorPrompts, setErrorPrompts] = useState<string[]>([]);
+  const [resendRequests, setResendRequests] = useState<boolean>(false);
+  const [prompts, setPrompts] = useState<string[]>([]);
+
   const ref = useRef<any>();
   const refPopUp = useRef<HTMLDivElement>(null);
   const refBackButton = useRef<HTMLButtonElement>(null);
@@ -73,7 +79,7 @@ const AiAssistant = ({
         subtitle: item.subtitle,
         prompt: item.prompt,
         payload: item.payload,
-        content:'',
+        content: "",
       });
     });
     setItemDataList(tempItemDataList);
@@ -83,11 +89,23 @@ const AiAssistant = ({
   // Create a useEffect hook that fills insightList wiht insightList coming from api response
   useEffect(() => {
     if (insightList.length && itemDataList.length) {
-      insightList.forEach((item: any, index: number) => {
+      const insigts = insightList.sort((a: any, b: any) => {
+        return a.index - b.index;
+      });
+      insigts.forEach((item: any, index: number) => {
         itemDataList[index].content = !item?.error
           ? item?.choices[0]?.message?.content
           : "";
       });
+      if (itemList.length === insightList.length) {
+        const converInsightsJson = Object.assign(
+          {},
+          ...insigts.map((x: any) => ({
+            [x.id]: x.choices[0]?.message?.content,
+          }))
+        );
+        receiveInsights(converInsightsJson);
+      }
       setItemDataList(itemDataList);
       setUpdateItemData(!updateItemdata);
     }
@@ -139,6 +157,7 @@ const AiAssistant = ({
     setDivHeight(400);
     if (!showWidget) {
       setShowDiv(false);
+      setErrorPrompts([]);
       if (refPopUp.current) {
         refPopUp.current.className = "main-popup-container-animate-end";
         const timer = setTimeout(() => {
@@ -152,24 +171,68 @@ const AiAssistant = ({
       if (refPopUp.current) {
         refPopUp.current.className = "main-popup-container-animate-start";
       }
+      const questionPrompts = itemList.map((x) => x.payload);
+      setPrompts(questionPrompts);
       if (await validateApiKey()) {
-        const prompts = itemList.map((x) => x.prompt + x.payload);
-        const response = await engine.generateTextList(prompts);
-       if(response.length){
-          setInsightList(response);
-          const filteredResponse = response.filter((x:any)=>!x.error);
-          const insights = Object.assign(
-            {},
-            ...filteredResponse.map((x: any) => ({
-              [x.id]: x.choices[0]?.message?.content,
-            }))
-          );
-          receiveInsights(insights);
-        }
+        await getInsights(questionPrompts);
       } else {
         setShowStatusError(true);
       }
+    }
+  };
+
+  useEffect(() => {
+    if (errorPrompts?.length) {
+      setTimeout(async () => {
+        await getInsights(errorPrompts);
+      }, 7000);
+    }
+  }, [resendRequests]);
+
+  const getInsights = async (promptsData: string[]) => {
+    let response: any[];
+    response = await engine.generateTextList(promptsData);
+    let failedArrIndexes: number[] = [];
+    let filteredResponse: any[] = [];
+
+    response.forEach((x: any, index) => {
+      if (x.error) {
+        failedArrIndexes.push(
+          failedRequestIndexes.length ? failedRequestIndexes[index] : index
+        );
       }
+    });
+
+    setFailedRequestIndexes(failedArrIndexes);
+    if (response.filter((x) => !x.error).length) {
+      filteredResponse = response.map((x, i) => {
+        return { ...x, index: failedRequestIndexes[i] || i };
+      });
+    } else {
+      filteredResponse = response.map((x, i) => {
+        return { ...x, index: i };
+      });
+    }
+
+    setInsightList((prev: any) => [
+      ...prev,
+      ...filteredResponse.filter((x: any) => !x.error),
+    ]);
+
+    let newPromtData: string[] = [];
+    filteredResponse.forEach((x, i) => {
+      if (x.error && x.error.message.includes("Rate limit reached")) {
+        newPromtData.push(prompts[i]);
+      }
+    });
+    if (prompts.some((x) => x !== undefined)) {
+      setPrompts(newPromtData);
+      setErrorPrompts(newPromtData);
+    }
+
+    if (newPromtData.length) {
+      setResendRequests(!resendRequests);
+    }
   };
 
   const validateApiKey = async () => {
@@ -229,7 +292,9 @@ const AiAssistant = ({
           className="main-popup-container-animate-start"
         >
           {showEnvError && <EnvironmentError color={color} />}
-          {showStatusError && <InvalidApiKeyError color={color} errorView={errorView}/>}
+          {showStatusError && (
+            <InvalidApiKeyError color={color} errorView={errorView} />
+          )}
           {!showEnvError && !showStatusError && (
             <>
               <div
