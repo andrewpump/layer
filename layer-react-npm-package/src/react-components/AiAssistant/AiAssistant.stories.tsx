@@ -34,5 +34,6 @@ Default.args = {
   image: myImage,
   showPopUp: false,
   showButton: true,
+  selectedTitle: "Sub Title 1",
   receiveInsights: (insights) => console.log(insights),
 };

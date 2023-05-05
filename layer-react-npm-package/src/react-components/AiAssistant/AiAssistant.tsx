@@ -19,6 +19,7 @@ export type AiAssistantProps = {
   showPopUp?: boolean;
   showButton: boolean;
   placeholder: string;
+  selectedTitle: string;
   receiveInsights: (insights: { [id: string]: string }) => void;
 };
 
@@ -42,6 +43,7 @@ const AiAssistant = ({
   showPopUp,
   showButton,
   placeholder,
+  selectedTitle,
   receiveInsights,
 }: AiAssistantProps) => {
   const engine = new MyDataListEngine();
@@ -49,6 +51,8 @@ const AiAssistant = ({
   if (!engine.validateKeys()) {
     return <EnvironmentError color="#FF0000" />;
   }
+  const [selectedTitleData, setSelectedTitleData] =
+    useState<string>(selectedTitle);
   const [showWidget, setShowWidget] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [showEnvError, setShowEnvError] = useState(false);
@@ -89,21 +93,13 @@ const AiAssistant = ({
   // Create a useEffect hook that fills insightList wiht insightList coming from api response
   useEffect(() => {
     if (insightList.length && itemDataList.length) {
-      
-      const insigts = insightList.sort((a: any, b: any) => {
-        return a.index - b.index;
+      insightList.forEach((item: any, index: number) => {
+        itemDataList[item?.index].content = item?.choices[0]?.message?.content;
       });
-
-      insigts.forEach((item: any, index: number) => {
-        itemDataList[index].content = !item?.error
-          ? item?.choices[0]?.message?.content
-          : "";
-      });
-
       if (itemList.length === insightList.length) {
         const convertInsightsJson = Object.assign(
           {},
-          ...insigts.map((x: any) => ({
+          ...insightList.map((x: any) => ({
             [x.id]: x.choices[0]?.message?.content,
           }))
         );
@@ -145,7 +141,7 @@ const AiAssistant = ({
     try {
       setDivHeight(DEAFULT_HEIGHT);
       itemDataList[selectedItem].content =
-        insightList[selectedItem]?.choices[0].message.content;
+        insightList[selectedItem]?.choices[0]?.message?.content;
     } catch (error) {
       setDivHeight(DEAFULT_HEIGHT);
       console.log(error);
@@ -157,14 +153,19 @@ const AiAssistant = ({
   };
 
   const onClickPopupButton = async () => {
-    setShowArrowButton(false);
-    setDivHeight(400);
+    if (!selectedTitleData) {
+      setDivHeight(400);
+    }
     if (!showWidget) {
       setShowDiv(false);
       if (refPopUp.current) {
         refPopUp.current.className = "main-popup-container-animate-end";
         const timer = setTimeout(() => {
-          setShowDetails(false);
+          if (!selectedTitleData) {
+            setShowDetails(false);
+          } else {
+            setSelectedTitleData("");
+          }
           setInsightList([]);
         }, 500);
         return () => clearTimeout(timer);
@@ -176,44 +177,49 @@ const AiAssistant = ({
       }
       const questionPrompts = itemList.map((x) => x.payload);
       setPrompts(questionPrompts);
-      if (await validateApiKey()) {
-        await getInsights(questionPrompts);
-      } else {
-        setShowStatusError(true);
+      if (!selectedTitle) {
+        if (await validateApiKey()) {
+          await getInsights(questionPrompts, selectedItem);
+        } else {
+          setShowStatusError(true);
+        }
       }
     }
   };
 
-      useEffect(() => {
-        if (errorPrompts?.length && showWidget) {
-          setTimeout(async () => {
-            await getInsights(errorPrompts);
-          }, 7000);
-        }
-      }, [resendRequests]);
+  useEffect(() => {
+    if (errorPrompts?.length && showWidget) {
+      setTimeout(async () => {
+        await getInsights(errorPrompts, selectedItem);
+      }, 7000);
+    }
+  }, [resendRequests]);
 
-        const getInsights = async (promptsData: string[]) => {
-          let response: any[];
-          response = await engine.generateTextList(promptsData);
-          let failedArrIndexes: number[] = [];
-          let filteredResponse: any[] = [];
+  const getInsights = async (promptsData: string[], selectedIndex: number) => {
+    let response: any[];
+    response = await engine.generateTextList(promptsData);
+    let failedArrIndexes: number[] = [];
+    let filteredResponse: any[] = [];
 
-          response.forEach((x: any, index) => {
-            if (x.error) {
-              failedArrIndexes.push(
-                failedRequestIndexes.length ? failedRequestIndexes[index] : index
-              );
-            }
-          });
+    response.forEach((x: any, index) => {
+      if (x.error) {
+        failedArrIndexes.push(
+          failedRequestIndexes.length ? failedRequestIndexes[index] : index
+        );
+      }
+    });
 
     setFailedRequestIndexes(failedArrIndexes);
     if (response.filter((x) => !x.error).length) {
       filteredResponse = response.map((x, i) => {
-        return { ...x, index: failedRequestIndexes[i] || i };
+        return {
+          ...x,
+          index: selectedTitle ? selectedIndex : failedRequestIndexes[i] || i,
+        };
       });
     } else {
       filteredResponse = response.map((x, i) => {
-        return { ...x, index: i };
+        return { ...x, index: selectedTitle ? selectedIndex : i };
       });
     }
 
@@ -221,21 +227,45 @@ const AiAssistant = ({
       ...prev,
       ...filteredResponse.filter((x: any) => !x.error),
     ]);
-   const newPromptsData = prompts.length ? prompts : promptsData
-   let newPromtData: string[] = [];
+    const newPromptsData = prompts.length ? prompts : promptsData;
+    let newPromtData: string[] = [];
     filteredResponse.forEach((x, i) => {
       if (x.error && x.error.message.includes("Rate limit reached")) {
-        if(newPromptsData[i]){
+        if (newPromptsData[i]) {
           newPromtData.push(newPromptsData[i]);
- }
+        }
       }
     });
-      setPrompts(newPromtData);
-      setErrorPrompts(newPromtData);
-      if (newPromtData.length) {
-        setResendRequests(!resendRequests);
-      }
+    setPrompts(newPromtData);
+    setErrorPrompts(newPromtData);
+    if (newPromtData.length) {
+      setResendRequests(!resendRequests);
+    }
   };
+
+  useEffect(() => {
+    if (selectedTitle) {
+      setInsightList([]);
+      setShowWidget(true);
+      setShowDetails(true);
+      const index = itemList.findIndex((x) => x.subtitle === selectedTitle);
+      if (index === -1) {
+        setSelectedItem(0);
+      } else {
+        setSelectedItem(index);
+      }
+
+      const selectedPrompts = [];
+      selectedPrompts.push(selectedTitle);
+      (async () => {
+        if (await validateApiKey()) {
+          getInsights(selectedPrompts, index);
+        } else {
+          setShowStatusError(true);
+        }
+      })();
+    }
+  }, [selectedTitle]);
 
   const validateApiKey = async () => {
     const res = await fetch("https://api.openai.com/v1/models", {
