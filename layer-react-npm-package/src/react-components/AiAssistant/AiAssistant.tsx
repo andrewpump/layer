@@ -89,23 +89,27 @@ const AiAssistant = ({
   // Create a useEffect hook that fills insightList wiht insightList coming from api response
   useEffect(() => {
     if (insightList.length && itemDataList.length) {
+      
       const insigts = insightList.sort((a: any, b: any) => {
         return a.index - b.index;
       });
+
       insigts.forEach((item: any, index: number) => {
         itemDataList[index].content = !item?.error
           ? item?.choices[0]?.message?.content
           : "";
       });
+
       if (itemList.length === insightList.length) {
-        const converInsightsJson = Object.assign(
+        const convertInsightsJson = Object.assign(
           {},
           ...insigts.map((x: any) => ({
             [x.id]: x.choices[0]?.message?.content,
           }))
         );
-        receiveInsights(converInsightsJson);
+        receiveInsights(convertInsightsJson);
       }
+
       setItemDataList(itemDataList);
       setUpdateItemData(!updateItemdata);
     }
@@ -157,7 +161,6 @@ const AiAssistant = ({
     setDivHeight(400);
     if (!showWidget) {
       setShowDiv(false);
-      setErrorPrompts([]);
       if (refPopUp.current) {
         refPopUp.current.className = "main-popup-container-animate-end";
         const timer = setTimeout(() => {
@@ -181,27 +184,27 @@ const AiAssistant = ({
     }
   };
 
-  useEffect(() => {
-    if (errorPrompts?.length) {
-      setTimeout(async () => {
-        await getInsights(errorPrompts);
-      }, 7000);
-    }
-  }, [resendRequests]);
+      useEffect(() => {
+        if (errorPrompts?.length && showWidget) {
+          setTimeout(async () => {
+            await getInsights(errorPrompts);
+          }, 7000);
+        }
+      }, [resendRequests]);
 
-  const getInsights = async (promptsData: string[]) => {
-    let response: any[];
-    response = await engine.generateTextList(promptsData);
-    let failedArrIndexes: number[] = [];
-    let filteredResponse: any[] = [];
+        const getInsights = async (promptsData: string[]) => {
+          let response: any[];
+          response = await engine.generateTextList(promptsData);
+          let failedArrIndexes: number[] = [];
+          let filteredResponse: any[] = [];
 
-    response.forEach((x: any, index) => {
-      if (x.error) {
-        failedArrIndexes.push(
-          failedRequestIndexes.length ? failedRequestIndexes[index] : index
-        );
-      }
-    });
+          response.forEach((x: any, index) => {
+            if (x.error) {
+              failedArrIndexes.push(
+                failedRequestIndexes.length ? failedRequestIndexes[index] : index
+              );
+            }
+          });
 
     setFailedRequestIndexes(failedArrIndexes);
     if (response.filter((x) => !x.error).length) {
@@ -218,21 +221,20 @@ const AiAssistant = ({
       ...prev,
       ...filteredResponse.filter((x: any) => !x.error),
     ]);
-
-    let newPromtData: string[] = [];
+   const newPromptsData = prompts.length ? prompts : promptsData
+   let newPromtData: string[] = [];
     filteredResponse.forEach((x, i) => {
       if (x.error && x.error.message.includes("Rate limit reached")) {
-        newPromtData.push(prompts[i]);
+        if(newPromptsData[i]){
+          newPromtData.push(newPromptsData[i]);
+ }
       }
     });
-    if (prompts.some((x) => x !== undefined)) {
       setPrompts(newPromtData);
       setErrorPrompts(newPromtData);
-    }
-
-    if (newPromtData.length) {
-      setResendRequests(!resendRequests);
-    }
+      if (newPromtData.length) {
+        setResendRequests(!resendRequests);
+      }
   };
 
   const validateApiKey = async () => {
