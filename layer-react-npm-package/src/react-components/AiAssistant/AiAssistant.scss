@@ -179,7 +179,12 @@
     margin: 0 5px;
 }
   @media (max-width: 530px) {
-  .main-popup-container-animate-start{
+   .main-popup-container-animate-start{
+      width: 272px;
+      padding: 16px;
+      bottom: 58px;
+    }
+    .main-popup-container-animate-end{
       width: 272px;
       padding: 16px;
       bottom: 58px;
