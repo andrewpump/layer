@@ -98,7 +98,9 @@ const AiAssistant = ({
   useEffect(() => {
     if (insightList.length && itemDataList.length) {
       insightList.forEach((item: any, index: number) => {
-        itemDataList[item?.index].content = item?.choices[0]?.message?.content;
+        if(Object.keys(itemDataList[item?.index])?.length){
+          itemDataList[item?.index].content = item?.choices[0]?.message?.content;
+        }
       });
       if (itemList.length === insightList.length) {
         const convertInsightsJson = Object.assign(
@@ -122,6 +124,57 @@ const AiAssistant = ({
   useEffect(() => {
     setShowWidget(showPopUp || false);
   }, [showPopUp]);
+
+  useEffect(() => {
+    if (errorPrompts?.length && showWidget) {
+      setTimeout(async () => {
+        await getInsights(errorPrompts, selectedItem);
+      }, 7000);
+    }
+  }, [resendRequests]);
+
+  useEffect(() => {
+    setSelectedTitleData(selectedTitle);
+    
+    if (selectedTitle) {
+      setInsightList([]);
+
+      if (showWidget) {
+        console.log('A');
+        if (Object.keys(itemDataList[selectedItem]).length) {
+          itemDataList[selectedItem].content = "";
+        }
+
+        (async () => {
+          if (await validateApiKey()) {
+            console.log('B');
+            let questionPrompts = [];
+            questionPrompts.push(selectedTitle);
+            await getInsights(questionPrompts, selectedItem);
+          } else {
+            console.log('C');
+            setShowStatusError(true);
+          }
+        })();
+      } else {
+        setShowWidget(true);
+      }
+
+      setShowDetails(true);
+      const index = itemList.findIndex((x) => x.subtitle === selectedTitle);
+      if (index === -1) {
+        setSelectedItem(0);
+      } else {
+        setSelectedItem(index);
+      }
+    }
+  }, [selectedTitle]);
+
+  useEffect(() => {
+    if (!itemDataList[selectedItem]?.content) {
+      setDivHeight(DEAFULT_HEIGHT);
+    }
+  }, [itemDataList[selectedItem]]);
 
   const springProps = useSpring({
     height: showDiv ? `${divHeight}px` : "0",
@@ -162,6 +215,7 @@ const AiAssistant = ({
     }
     if (!showWidget) {
       setShowDiv(false);
+      setInsightList([]);
       if (refPopUp.current) {
         refPopUp.current.className = "main-popup-container-animate-end";
         const timer = setTimeout(() => {
@@ -170,7 +224,6 @@ const AiAssistant = ({
           } else {
             setSelectedTitleData("");
           }
-          setInsightList([]);
         }, 500);
         return () => clearTimeout(timer);
       }
@@ -179,25 +232,26 @@ const AiAssistant = ({
       if (refPopUp.current) {
         refPopUp.current.className = "main-popup-container-animate-start";
       }
-      const questionPrompts = itemList.map((x) => x.payload);
+
+      let questionPrompts = [];
+
+      if (selectedTitleData) {
+        questionPrompts.push(selectedTitle);
+      } else {
+        questionPrompts = itemList.map((x) => x.payload);
+      }
+
       setPrompts(questionPrompts);
-      if (!selectedTitle) {
-        if (await validateApiKey()) {
-          await getInsights(questionPrompts, selectedItem);
-        } else {
-          setShowStatusError(true);
-        }
+
+      if (await validateApiKey()) {
+        await getInsights(questionPrompts, selectedItem);
+      } else {
+        setShowStatusError(true);
       }
     }
   };
 
-  useEffect(() => {
-    if (errorPrompts?.length && showWidget) {
-      setTimeout(async () => {
-        await getInsights(errorPrompts, selectedItem);
-      }, 7000);
-    }
-  }, [resendRequests]);
+  
 
   const getInsights = async (promptsData: string[], selectedIndex: number) => {
     let response: any[];
@@ -218,12 +272,12 @@ const AiAssistant = ({
       filteredResponse = response.map((x, i) => {
         return {
           ...x,
-          index: selectedTitle ? selectedIndex : failedRequestIndexes[i] || i,
+          index: selectedTitleData ? selectedIndex : failedRequestIndexes[i] || i,
         };
       });
     } else {
       filteredResponse = response.map((x, i) => {
-        return { ...x, index: selectedTitle ? selectedIndex : i };
+        return { ...x, index: selectedTitleData ? selectedIndex : i };
       });
     }
 
@@ -247,36 +301,12 @@ const AiAssistant = ({
     }
   };
 
-  useEffect(() => {
-    if (selectedTitle) {
-      setInsightList([]);
-      setShowWidget(true);
-      setShowDetails(true);
-      const index = itemList.findIndex((x) => x.subtitle === selectedTitle);
-      if (index === -1) {
-        setSelectedItem(0);
-      } else {
-        setSelectedItem(index);
-      }
-
-      const selectedPrompts = [];
-      selectedPrompts.push(selectedTitle);
-     (async () => {
-        if (await validateApiKey()) {
-          getInsights(selectedPrompts, index);
-        } else {
-          setShowStatusError(true);
-        }
-      })();
-    }
-  }, [selectedTitle]);
-
   const validateApiKey = async () => {
     const res = await fetch("https://api.openai.com/v1/models", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${engine.openAIKey}`,
+        Authorization: `Bearer ${engine.openAIKey || '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'} `,
       },
     });
     return res?.status === 401 ? false : true;
@@ -311,7 +341,10 @@ const AiAssistant = ({
           <Button
             style={{ backgroundColor: color }}
             className="main-popup-button"
-            onClick={() => setShowWidget(!showWidget)}
+            onClick={() => {
+              setSelectedTitleData("");
+              setShowWidget(!showWidget);
+            }}
             child={
               showWidget ? (
                 <CrossIcon color="#ffffff" />

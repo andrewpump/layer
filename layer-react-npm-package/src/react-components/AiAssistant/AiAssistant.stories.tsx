@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Meta, Story } from "@storybook/react";
 import AiAssistant, { AiAssistantProps } from "./AiAssistant";
 import myImage from '../../assets/images/demoImage.png'
@@ -7,8 +7,20 @@ export default {
   component: AiAssistant,
 } as Meta;
 
-const Template: Story<AiAssistantProps> = (args) => <AiAssistant {...args} />;
+const Template: Story<AiAssistantProps> = (args) => {
+  const [selectedTitle, setSelectedTitle] = useState("");
 
+  const togglePopUp = () => {
+    setSelectedTitle('What is Speed');
+  };
+
+  return (
+    <>
+      <AiAssistant {...args} selectedTitle={selectedTitle} />
+      <button onClick={togglePopUp}>Toggle Pop-up</button>
+    </>
+  );
+};
 export const Default = Template.bind({});
 Default.args = {
   title: "Bops Insight",
@@ -34,6 +46,6 @@ Default.args = {
   image: myImage,
   showPopUp: false,
   showButton: true,
-  selectedTitle: "Sub Title 1",
+  selectedTitle: "",
   receiveInsights: (insights) => console.log(insights),
 };
