@@ -92,7 +92,7 @@ const AiAssistant = ({
     });
     setItemDataList(tempItemDataList);
     setUpdateItemData(!updateItemdata);
-  }, [itemList]);
+  }, [itemList, selectedTitle]);
 
   // Create a useEffect hook that fills insightList wiht insightList coming from api response
   useEffect(() => {
@@ -111,7 +111,7 @@ const AiAssistant = ({
         );
         receiveInsights(convertInsightsJson);
       }
-
+ 
       setItemDataList(itemDataList);
       setUpdateItemData(!updateItemdata);
     }
@@ -139,20 +139,15 @@ const AiAssistant = ({
     if (selectedTitle) {
       setInsightList([]);
 
-      if (showWidget) {
-        console.log('A');
-        if (Object.keys(itemDataList[selectedItem]).length) {
-          itemDataList[selectedItem].content = "";
-        }
+      const index = itemList.findIndex((x) => x.subtitle === selectedTitle);
 
+      if (showWidget) {
         (async () => {
           if (await validateApiKey()) {
-            console.log('B');
             let questionPrompts = [];
             questionPrompts.push(selectedTitle);
-            await getInsights(questionPrompts, selectedItem);
+            await getInsights(questionPrompts, index);
           } else {
-            console.log('C');
             setShowStatusError(true);
           }
         })();
@@ -161,7 +156,6 @@ const AiAssistant = ({
       }
 
       setShowDetails(true);
-      const index = itemList.findIndex((x) => x.subtitle === selectedTitle);
       if (index === -1) {
         setSelectedItem(0);
       } else {
@@ -210,9 +204,10 @@ const AiAssistant = ({
   };
 
   const onClickPopupButton = async () => {
-    if (!selectedTitleData) {
+    if (!selectedTitleData && !showStatusError) {
       setDivHeight(400);
     }
+
     if (!showWidget) {
       setShowDiv(false);
       setInsightList([]);
@@ -247,11 +242,10 @@ const AiAssistant = ({
         await getInsights(questionPrompts, selectedItem);
       } else {
         setShowStatusError(true);
+        setDivHeight(DEAFULT_HEIGHT);
       }
     }
   };
-
-  
 
   const getInsights = async (promptsData: string[], selectedIndex: number) => {
     let response: any[];
@@ -306,7 +300,7 @@ const AiAssistant = ({
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${engine.openAIKey || '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'} `,
+        Authorization: `Bearer ${engine.openAIKey}`,
       },
     });
     return res?.status === 401 ? false : true;

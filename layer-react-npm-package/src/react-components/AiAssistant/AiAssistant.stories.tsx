@@ -14,12 +14,7 @@ const Template: Story<AiAssistantProps> = (args) => {
     setSelectedTitle('What is Speed');
   };
 
-  return (
-    <>
-      <AiAssistant {...args} selectedTitle={selectedTitle} />
-      <button onClick={togglePopUp}>Toggle Pop-up</button>
-    </>
-  );
+  return  <AiAssistant {...args}/>;
 };
 export const Default = Template.bind({});
 Default.args = {
