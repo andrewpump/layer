@@ -1,15 +1,18 @@
 import React, { useState, useRef, useEffect } from "react";
 import Text from "../Text/Text";
+import Input from "../Input/Input";
 import Button from "../Button/Button";
 import ListItem, { ListItemProps } from "./ListItem/ListItem";
 import ItemDetail from "./ItemDetail/ItemDetail";
 import CrossIcon from "../../assets/icons/crossIcon";
+import SendIcon from "../../assets/icons/sendIcon";
 import ArrowRightIcon from "../../assets/icons/arrowRightIcon";
 import "./AiAssistant.scss";
 import EnvironmentError from "../EnvironmentError";
 import InvalidApiKeyError from "../InvalidApiKeyError";
 import { MyDataListEngine } from "../DataListEngine";
 import { useSpring, animated } from "@react-spring/web";
+const  imageLayer =  require("../../assets/images/layerImg.png");
 
 export type AiAssistantProps = {
   title: string;
@@ -53,16 +56,17 @@ const AiAssistant = ({
   }
   const [selectedTitleData, setSelectedTitleData] =
     useState<string>(selectedTitle);
-  const [showWidget, setShowWidget] = useState(false);
-  const [showDetails, setShowDetails] = useState(false);
-  const [showEnvError, setShowEnvError] = useState(false);
-  const [showStatusError, setShowStatusError] = useState(false);
-  const [updateItemdata, setUpdateItemData] = useState(false);
+  const [searchItem, setSearchItem] = useState<string>("")
+  const [showWidget, setShowWidget] = useState<boolean>(false);
+  const [showDetails, setShowDetails] = useState<boolean>(false);
+  const [showEnvError, setShowEnvError] = useState<boolean>(false);
+  const [showStatusError, setShowStatusError] = useState<boolean>(false);
+  const [updateItemdata, setUpdateItemData] = useState<boolean>(false);
   const [itemDataList, setItemDataList] = useState<ItemData[]>([]);
   const [selectedItem, setSelectedItem] = useState<number>(0);
-  const [showDiv, setShowDiv] = useState(false);
-  const [showArrowButton, setShowArrowButton] = useState(false);
-  const [divHeight, setDivHeight] = useState(0);
+  const [showDiv, setShowDiv] = useState<boolean>(false);
+  const [showArrowButton, setShowArrowButton] = useState<boolean>(false);
+  const [divHeight, setDivHeight] = useState<number>(0);
   const [insightList, setInsightList] = useState<any>([]);
   const [failedRequestIndexes, setFailedRequestIndexes] = useState<any>([]);
   const [errorPrompts, setErrorPrompts] = useState<string[]>([]);
@@ -257,7 +261,7 @@ const AiAssistant = ({
 
       const selectedPrompts = [];
       selectedPrompts.push(selectedTitle);
-      (async () => {
+     (async () => {
         if (await validateApiKey()) {
           getInsights(selectedPrompts, index);
         } else {
@@ -373,6 +377,28 @@ const AiAssistant = ({
                     />
                   ))
                 )}
+              </div>
+              <div className="chat-field">
+                <div className="searchBox">
+                  <Input
+                    placeholder="Enter Product SKU or name"
+                    type="text"
+                    value={searchItem}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setSearchItem(e.target.value)
+                    }
+                  />
+                  <Button
+                    child={<SendIcon color="#ffffff" />}
+                    className="sendBtn"
+                    onClick={() => setSearchItem("")}
+                  />
+                </div>
+                <div className="powered-by">
+                  Powered By{" "}
+                 <span><img src={imageLayer} width="40" /></span> 
+                 Layer
+                </div>
               </div>
             </>
           )}
