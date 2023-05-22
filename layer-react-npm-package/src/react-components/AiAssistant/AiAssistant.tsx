@@ -12,6 +12,7 @@ import EnvironmentError from "../EnvironmentError";
 import InvalidApiKeyError from "../InvalidApiKeyError";
 import { MyDataListEngine } from "../DataListEngine";
 import { useSpring, animated } from "@react-spring/web";
+import axios from 'axios';
 const  imageLayer =  require("../../assets/images/layerImg.png");
 
 export type AiAssistantProps = {
@@ -24,6 +25,7 @@ export type AiAssistantProps = {
   placeholder: string;
   selectedTitle: string;
   receiveInsights: (insights: { [id: string]: string }) => void;
+  receiveQueryResponse: (queryResponse: { [output: string]: string }) => void;
 };
 
 export type ItemData = {
@@ -48,6 +50,7 @@ const AiAssistant = ({
   placeholder,
   selectedTitle,
   receiveInsights,
+  receiveQueryResponse,
 }: AiAssistantProps) => {
   const engine = new MyDataListEngine();
 
@@ -328,6 +331,25 @@ const AiAssistant = ({
       setShowDetails(true);
     }
   };
+
+  // CHAT BOT CALL API WITH LONGCHAIN
+  const chatBotResponse = async (searchItemData: string) => {
+    const res = await axios.get(
+      `http://localhost:5000?query=${searchItemData}`
+    );
+    return res;
+  };
+  const chatBot = async () => {
+    searchItem;
+    try {
+      const itemResponse = await chatBotResponse(searchItem);
+      receiveQueryResponse(itemResponse?.data);
+      setSearchItem("");
+    } catch (error) {
+      console.error(error, "ERROR");
+    }
+  };
+
   return (
     <>
       <div className="ai-assistant-main-container">
@@ -418,7 +440,7 @@ const AiAssistant = ({
                   <Button
                     child={<SendIcon color="#ffffff" />}
                     className="sendBtn"
-                    onClick={() => setSearchItem("")}
+                    onClick={() => chatBot()}
                   />
                 </div>
                 <div className="powered-by">
