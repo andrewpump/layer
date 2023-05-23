@@ -1,21 +1,19 @@
 import React, { useState, useRef, useEffect } from "react";
 import Text from "../Text/Text";
-import Input from "../Input/Input";
 import Button from "../Button/Button";
-import ListItem, { ListItemProps } from "./ListItem/ListItem";
+import ListItem from "./ListItem/ListItem";
 import ItemDetail from "./ItemDetail/ItemDetail";
 import CrossIcon from "../../assets/icons/crossIcon";
-import SendIcon from "../../assets/icons/sendIcon";
 import ArrowRightIcon from "../../assets/icons/arrowRightIcon";
 import "./AiAssistant.scss";
 import EnvironmentError from "../EnvironmentError";
 import InvalidApiKeyError from "../InvalidApiKeyError";
 import { MyDataListEngine } from "../DataListEngine";
 import { useSpring, animated } from "@react-spring/web";
-import axios from 'axios';
-const  imageLayer =  require("../../assets/images/layerImg.png");
+// const  imageLayer =  require("../../assets/images/layerImg.png");
 
 export type AiAssistantProps = {
+  // Props definition
   title: string;
   itemList: ItemData[];
   color: string;
@@ -29,12 +27,16 @@ export type AiAssistantProps = {
 };
 
 export type ItemData = {
+  // ItemData definition
   title: string;
   subtitle: string;
   prompt: string;
   payload: string;
   content: string;
+  id: string;
 };
+
+// Error content for OpenAI invalid key
 const errorView = {
   title: "401 Error",
   message:
@@ -54,9 +56,7 @@ const AiAssistant = ({
 }: AiAssistantProps) => {
   const engine = new MyDataListEngine();
 
-  if (!engine.validateKeys()) {
-    return <EnvironmentError color="#FF0000" />;
-  }
+  // State variables
   const [selectedTitleData, setSelectedTitleData] =
     useState<string>(selectedTitle);
   const [searchItem, setSearchItem] = useState<string>("")
@@ -76,12 +76,15 @@ const AiAssistant = ({
   const [resendRequests, setResendRequests] = useState<boolean>(false);
   const [prompts, setPrompts] = useState<string[]>([]);
 
+  // Refs
   const ref = useRef<any>();
   const refPopUp = useRef<HTMLDivElement>(null);
   const refBackButton = useRef<HTMLButtonElement>(null);
-  const DEAFULT_HEIGHT = 200;
 
-  // Create a useEffect hook that fills itemDataList wiht ItemData objects from the itemList
+  // Constants
+  const DEAFULT_WIDGET_HEIGHT = 200;
+
+  // Fill itemDataList with ItemData objects from the itemList
   useEffect(() => {
     const tempItemDataList: ItemData[] = [];
     itemList.forEach((item) => {
@@ -91,43 +94,40 @@ const AiAssistant = ({
         prompt: item.prompt,
         payload: item.payload,
         content: "",
+        id:"",
       });
     });
     setItemDataList(tempItemDataList);
     setUpdateItemData(!updateItemdata);
   }, [itemList, selectedTitle]);
 
-  // Create a useEffect hook that fills insightList wiht insightList coming from api response
+  // Fill insightList with data from API response
   useEffect(() => {
     if (insightList.length && itemDataList.length) {
-      insightList.forEach((item: any, index: number) => {
+      insightList.forEach((item: any,) => {
         if(Object.keys(itemDataList[item?.index])?.length){
           itemDataList[item?.index].content = item?.choices[0]?.message?.content;
         }
+        if(Object.keys(itemDataList[item?.index])?.length){
+          itemDataList[item?.index].id = item?.id;
+        }
       });
-      if (itemList.length === insightList.length) {
-        const convertInsightsJson = Object.assign(
-          {},
-          ...insightList.map((x: any) => ({
-            [x.id]: x.choices[0]?.message?.content,
-          }))
-        );
-        receiveInsights(convertInsightsJson);
-      }
- 
       setItemDataList(itemDataList);
       setUpdateItemData(!updateItemdata);
     }
   }, [insightList]);
 
+  // Default widget button show and hide
   useEffect(() => {
     onClickPopupButton();
   }, [showWidget]);
 
+  // Extra widget button show and hide from demo site
   useEffect(() => {
     setShowWidget(showPopUp || false);
   }, [showPopUp]);
 
+  // Recall API request when OpenAI throws an error
   useEffect(() => {
     if (errorPrompts?.length && showWidget) {
       setTimeout(async () => {
@@ -136,6 +136,7 @@ const AiAssistant = ({
     }
   }, [resendRequests]);
 
+  // Call API when selecting a recommendation for a single item from the demo site list
   useEffect(() => {
     setSelectedTitleData(selectedTitle);
     
@@ -146,7 +147,7 @@ const AiAssistant = ({
 
       if (showWidget) {
         (async () => {
-          if (await validateApiKey()) {
+          if (await engine.validateApiKey()) {
             let questionPrompts = [];
             questionPrompts.push(selectedTitle);
             await getInsights(questionPrompts, index);
@@ -167,12 +168,14 @@ const AiAssistant = ({
     }
   }, [selectedTitle]);
 
+  // Set height of widget pop when item data is received from API success response
   useEffect(() => {
     if (!itemDataList[selectedItem]?.content) {
-      setDivHeight(DEAFULT_HEIGHT);
+      setDivHeight(DEAFULT_WIDGET_HEIGHT);
     }
   }, [itemDataList[selectedItem]]);
 
+  // useSpring for animating widget popup
   const springProps = useSpring({
     height: showDiv ? `${divHeight}px` : "0",
     opacity: showDiv ? 1 : 0,
@@ -187,25 +190,28 @@ const AiAssistant = ({
     trans: [0, 1, 2],
   });
 
+  // Select item from recommendation itemListData
   const onClickList = async (title: string) => {
     setShowDetails(true);
     setTimeout(() => {
       setShowArrowButton(true);
     }, 1700);
     try {
-      setDivHeight(DEAFULT_HEIGHT);
       itemDataList[selectedItem].content =
         insightList[selectedItem]?.choices[0]?.message?.content;
     } catch (error) {
-      setDivHeight(DEAFULT_HEIGHT);
       console.log(error);
+    } finally {
+      setDivHeight(DEAFULT_WIDGET_HEIGHT);
     }
   };
 
+  // create function for setDivHeight  
   const onSetHeight = (height: number) => {
     setDivHeight(height);
   };
 
+  // Show or hide the widget popup
   const onClickPopupButton = async () => {
     if (!selectedTitleData && !showStatusError) {
       setDivHeight(400);
@@ -241,15 +247,16 @@ const AiAssistant = ({
 
       setPrompts(questionPrompts);
 
-      if (await validateApiKey()) {
+      if (await engine.validateApiKey()) {
         await getInsights(questionPrompts, selectedItem);
       } else {
         setShowStatusError(true);
-        setDivHeight(DEAFULT_HEIGHT);
+        setDivHeight(DEAFULT_WIDGET_HEIGHT);
       }
     }
   };
 
+  // Get insights from OpenAI API
   const getInsights = async (promptsData: string[], selectedIndex: number) => {
     let response: any[];
     response = await engine.generateTextList(promptsData);
@@ -290,7 +297,7 @@ const AiAssistant = ({
           newPromtData.push(newPromptsData[i]);
         }
       }
-    });
+    });    
     setPrompts(newPromtData);
     setErrorPrompts(newPromtData);
     if (newPromtData.length) {
@@ -298,17 +305,8 @@ const AiAssistant = ({
     }
   };
 
-  const validateApiKey = async () => {
-    const res = await fetch("https://api.openai.com/v1/models", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${engine.openAIKey}`,
-      },
-    });
-    return res?.status === 401 ? false : true;
-  };
 
+  // Go back to the item list
   const onClickBackButton = () => {
     setShowDetails(true);
     setTimeout(() => {
@@ -332,23 +330,16 @@ const AiAssistant = ({
     }
   };
 
-  // CHAT BOT CALL API WITH LONGCHAIN
-  const chatBotResponse = async (searchItemData: string) => {
-    const res = await axios.get(
-      `http://localhost:5000?query=${searchItemData}`
-    );
-    return res;
-  };
-  const chatBot = async () => {
-    searchItem;
-    try {
-      const itemResponse = await chatBotResponse(searchItem);
-      receiveQueryResponse(itemResponse?.data);
-      setSearchItem("");
-    } catch (error) {
-      console.error(error, "ERROR");
-    }
-  };
+  // // Send a query to the chatbot
+  // const chatBot = async () => {
+  //   try {
+  //     const itemResponse = await engine.chatBotResponse(searchItem);
+  //     receiveQueryResponse(itemResponse?.data);
+  //     setSearchItem("");
+  //   } catch (error) {
+  //     console.error(error, "ERROR");
+  //   }
+  // };
 
   return (
     <>
@@ -412,6 +403,7 @@ const AiAssistant = ({
                     updateItemData={updateItemdata}
                     onSetHeight={onSetHeight}
                     placeholder={placeholder}
+                    receiveInsights={receiveInsights}
                   />
                 ) : (
                   itemList.map((item, index) => (
@@ -427,7 +419,7 @@ const AiAssistant = ({
                   ))
                 )}
               </div>
-              <div className="chat-field">
+              {/* <div className="chat-field">
                 <div className="searchBox">
                   <Input
                     placeholder="Enter Product SKU or name"
@@ -448,7 +440,7 @@ const AiAssistant = ({
                  <span><img src={imageLayer} width="40" /></span> 
                  Layer
                 </div>
-              </div>
+              </div> */}
             </>
           )}
         </animated.div>

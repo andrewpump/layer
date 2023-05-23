@@ -18,6 +18,7 @@ export type ItemDetailProps = {
   updateItemData: boolean;
   onSetHeight: (height: number) => void;
   placeholder: string;
+  receiveInsights: (insights: { [id: string]: string }) => void;
 };
 
 export type ItemDetailHandle = {
@@ -31,7 +32,7 @@ type ItemDisplay = {
 };
 
 const ItemDetail = forwardRef<ItemDetailHandle, ItemDetailProps>(
-  ({ color, id, itemData, onSetHeight, placeholder, updateItemData }, ref) => {
+  ({ color, id, itemData, onSetHeight, placeholder, updateItemData, receiveInsights }, ref) => {
     const refForDiv = useRef<HTMLDivElement>(null);
     const [item, setItem] = useState<ItemDisplay>({
       title: itemData.title,
@@ -49,7 +50,10 @@ const ItemDetail = forwardRef<ItemDetailHandle, ItemDetailProps>(
     }));
 
     useEffect(() => {
-      setItem({
+      if (item?.content) {
+       receiveInsights({ [itemData.id]: itemData?.content });
+      }
+        setItem({
         ...itemData,
         content: itemData.content || placeholder,
       });
@@ -72,30 +76,6 @@ const ItemDetail = forwardRef<ItemDetailHandle, ItemDetailProps>(
         }
       }
     }, [updateItemData]);
-
-    // call openai streaming api and update item content with the response
-    const generateText = async () => {
-      const res = await fetch(
-        "https://api.openai.com/v1/chat/completions",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${process.env.REACT_APP_OPEN_AI_API_KEY}`,
-          },
-          body: JSON.stringify({
-            "model": "gpt-3.5-turbo",
-            "messages": [{"role": "user", "content": itemData.prompt + itemData.payload}]
-          }),
-        }
-      );
-      const data = await res.json();
-      setItem({
-        title: itemData.title,
-        subtitle: itemData.subtitle,
-        content: data.choices[0].message.content,
-      });
-    };
 
     return (
       <div
