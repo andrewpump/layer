@@ -69,17 +69,17 @@ export class MyDataListEngine implements DataListEngine {
       }),
     });
 
-    const data = await res.json();
+    let data = await res.json();
+    data.prompt = prompt;
     return data;
   }
 
   async generateTextList(prompts: string[]): Promise<string[]> {
-    // Generates text for multiple prompts by calling the generateText function for each prompt
-    // Returns an array of generated texts corresponding to the prompts
-
-    const responses = await Promise.all(
-      prompts.map((prompt) => this.generateText(prompt))
-    );
-    return responses;
+    const promises = <any>[];
+    prompts.forEach(url => {
+      const promise = this.generateText(url);
+      promises.push(promise);
+    });
+    return promises;
   }
 }
