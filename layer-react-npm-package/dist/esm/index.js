@@ -346,48 +346,19 @@ var AiAssistant = function (_a) {
     var _d = useState(false), showDetails = _d[0], setShowDetails = _d[1];
     var _e = useState(false), showEnvError = _e[0]; _e[1];
     var _f = useState(false), showStatusError = _f[0], setShowStatusError = _f[1];
-    var _g = useState(false), updateItemdata = _g[0], setUpdateItemData = _g[1];
-    var _h = useState([]), itemDataList = _h[0], setItemDataList = _h[1];
+    var _g = useState(false), updateItemdata = _g[0]; _g[1];
+    var _h = useState([]), itemDataList = _h[0]; _h[1];
     var _j = useState(0), selectedItem = _j[0], setSelectedItem = _j[1];
     var _k = useState(false), showDiv = _k[0], setShowDiv = _k[1];
     var _l = useState(false), showArrowButton = _l[0], setShowArrowButton = _l[1];
     var _m = useState(0), divHeight = _m[0], setDivHeight = _m[1];
-    var _o = useState({}), insightData = _o[0], setInsightData = _o[1];
+    var _o = useState({}); _o[0]; var setInsightData = _o[1];
     // Refs
     var ref = useRef();
     var refPopUp = useRef(null);
     var refBackButton = useRef(null);
     // Constants
     var DEAFULT_WIDGET_HEIGHT = 200;
-    // Fill itemDataList with ItemData objects from the itemList
-    useEffect(function () {
-        var tempItemDataList = [];
-        itemList.forEach(function (item) {
-            tempItemDataList.push({
-                title: item.title,
-                subtitle: item.subtitle,
-                prompt: item.prompt,
-                payload: item.payload,
-                content: "",
-                id: "",
-            });
-        });
-        setItemDataList(tempItemDataList);
-        setUpdateItemData(!updateItemdata);
-    }, [itemList, selectedTitle]);
-    // Fill insightList with data from API response
-    useEffect(function () {
-        var _a, _b;
-        if (insightData && Object.keys(insightData).length && itemDataList.length) {
-            if (itemDataList.length) {
-                var index = itemDataList.findIndex(function (x) { return x.subtitle === (insightData === null || insightData === void 0 ? void 0 : insightData.prompt); });
-                itemDataList[index].content = (_b = (_a = insightData === null || insightData === void 0 ? void 0 : insightData.choices[0]) === null || _a === void 0 ? void 0 : _a.message) === null || _b === void 0 ? void 0 : _b.content;
-                itemDataList[index].id = insightData === null || insightData === void 0 ? void 0 : insightData.id;
-            }
-            setItemDataList(itemDataList);
-            setUpdateItemData(!updateItemdata);
-        }
-    }, [insightData]);
     // Default widget button show and hide
     useEffect(function () {
         onClickPopupButton();
@@ -396,46 +367,6 @@ var AiAssistant = function (_a) {
     useEffect(function () {
         setShowWidget(showPopUp || false);
     }, [showPopUp]);
-    // Call API when selecting a recommendation for a single item from the demo site list
-    useEffect(function () {
-        setSelectedTitleData(selectedTitle);
-        if (selectedTitle) {
-            setInsightData({});
-            var index_1 = itemList.findIndex(function (x) { return x.subtitle === selectedTitle; });
-            if (showWidget) {
-                (function () { return __awaiter(void 0, void 0, void 0, function () {
-                    var questionPrompts;
-                    return __generator(this, function (_a) {
-                        switch (_a.label) {
-                            case 0: return [4 /*yield*/, engine.validateApiKey()];
-                            case 1:
-                                if (!_a.sent()) return [3 /*break*/, 3];
-                                questionPrompts = [];
-                                questionPrompts.push(selectedTitle);
-                                return [4 /*yield*/, getInsights(questionPrompts)];
-                            case 2:
-                                _a.sent();
-                                return [3 /*break*/, 4];
-                            case 3:
-                                setShowStatusError(true);
-                                _a.label = 4;
-                            case 4: return [2 /*return*/];
-                        }
-                    });
-                }); })();
-            }
-            else {
-                setShowWidget(true);
-            }
-            setShowDetails(true);
-            if (index_1 === -1) {
-                setSelectedItem(0);
-            }
-            else {
-                setSelectedItem(index_1);
-            }
-        }
-    }, [selectedTitle]);
     // Set height of widget pop when item data is received from API success response
     useEffect(function () {
         var _a;
@@ -495,7 +426,7 @@ var AiAssistant = function (_a) {
                         }, 500);
                         return [2 /*return*/, function () { return clearTimeout(timer_1); }];
                     }
-                    return [3 /*break*/, 5];
+                    return [3 /*break*/, 3];
                 case 1:
                     setShowDiv(true);
                     if (refPopUp.current) {
@@ -510,67 +441,13 @@ var AiAssistant = function (_a) {
                     }
                     return [4 /*yield*/, engine.validateApiKey()];
                 case 2:
-                    if (!_a.sent()) return [3 /*break*/, 4];
-                    return [4 /*yield*/, getInsights(questionPrompts)];
-                case 3:
-                    _a.sent();
-                    return [3 /*break*/, 5];
-                case 4:
-                    setShowStatusError(true);
-                    setDivHeight(DEAFULT_WIDGET_HEIGHT);
-                    _a.label = 5;
-                case 5: return [2 /*return*/];
-            }
-        });
-    }); };
-    // Get insights from OpenAI API
-    var getInsights = function (promptsData) { return __awaiter(void 0, void 0, void 0, function () {
-        var response, errorPromises, promises, completedIndex, completedPromise;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    response = {};
-                    errorPromises = [];
-                    return [4 /*yield*/, engine.generateTextList(promptsData)];
-                case 1:
-                    promises = _a.sent();
-                    _a.label = 2;
-                case 2:
-                    if (!(promises.length > 0)) return [3 /*break*/, 5];
-                    return [4 /*yield*/, Promise.race(promises.map(function (promise, index) {
-                            return Promise.resolve(promise).then(function () { return index; });
-                        }))];
-                case 3:
-                    completedIndex = _a.sent();
-                    completedPromise = promises[completedIndex];
-                    promises.splice(completedIndex, 1);
-                    return [4 /*yield*/, completedPromise];
-                case 4:
-                    response = _a.sent();
-                    if (!(response === null || response === void 0 ? void 0 : response.error)) {
-                        setInsightData(response);
-                    }
+                    if (_a.sent()) ;
                     else {
-                        errorPromises.push(response === null || response === void 0 ? void 0 : response.prompt);
+                        setShowStatusError(true);
+                        setDivHeight(DEAFULT_WIDGET_HEIGHT);
                     }
-                    return [3 /*break*/, 2];
-                case 5:
-                    if (errorPromises.length > 0) {
-                        setTimeout(function () { return __awaiter(void 0, void 0, void 0, function () {
-                            return __generator(this, function (_a) {
-                                switch (_a.label) {
-                                    case 0: return [4 /*yield*/, getInsights(errorPromises)];
-                                    case 1:
-                                        _a.sent();
-                                        return [2 /*return*/];
-                                }
-                            });
-                        }); }, 7000);
-                    }
-                    else {
-                        errorPromises = [];
-                    }
-                    return [2 /*return*/];
+                    _a.label = 3;
+                case 3: return [2 /*return*/];
             }
         });
     }); };
@@ -597,16 +474,6 @@ var AiAssistant = function (_a) {
             setShowDetails(true);
         }
     };
-    // // Send a query to the chatbot
-    // const chatBot = async () => {
-    //   try {
-    //     const itemResponse = await engine.chatBotResponse(searchItem);
-    //     receiveQueryResponse(itemResponse?.data);
-    //     setSearchItem("");
-    //   } catch (error) {
-    //     console.error(error, "ERROR");
-    //   }
-    // };
     return (React__default.createElement(React__default.Fragment, null,
         React__default.createElement("div", { className: "ai-assistant-main-container" },
             showButton && (React__default.createElement(Button, { style: { backgroundColor: color }, className: "main-popup-button", onClick: function () {

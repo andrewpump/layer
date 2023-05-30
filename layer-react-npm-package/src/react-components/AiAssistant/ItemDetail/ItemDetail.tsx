@@ -14,7 +14,7 @@ import { OpenAIStream } from "../../../openai/gpt4-request";
 export type ItemDetailProps = {
   color: string;
   id: string;
-  itemData: ItemData;
+  itemData: ItemData | null;
   updateItemData: boolean;
   onSetHeight: (height: number) => void;
   placeholder: string;
@@ -35,9 +35,9 @@ const ItemDetail = forwardRef<ItemDetailHandle, ItemDetailProps>(
   ({ color, id, itemData, onSetHeight, placeholder, updateItemData, receiveInsights }, ref) => {
     const refForDiv = useRef<HTMLDivElement>(null);
     const [item, setItem] = useState<ItemDisplay>({
-      title: itemData.title,
-      subtitle: itemData.subtitle,
-      content: itemData.content || placeholder,
+      title: itemData?.title || "",
+      subtitle: itemData?.subtitle || "",
+      content: itemData?.content || placeholder,
     });
 
     useImperativeHandle(ref, () => ({

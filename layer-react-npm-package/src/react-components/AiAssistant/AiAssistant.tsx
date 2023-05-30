@@ -61,13 +61,15 @@ const AiAssistant = ({
   const [selectedTitleData, setSelectedTitleData] =
     useState<string>(selectedTitle);
   // const [searchItem, setSearchItem] = useState<string>("");
+
+  // widget is shown or not
   const [showWidget, setShowWidget] = useState<boolean>(false);
   const [showDetails, setShowDetails] = useState<boolean>(false);
   const [showEnvError, setShowEnvError] = useState<boolean>(false);
   const [showStatusError, setShowStatusError] = useState<boolean>(false);
   const [updateItemdata, setUpdateItemData] = useState<boolean>(false);
   const [itemDataList, setItemDataList] = useState<ItemData[]>([]);
-  const [selectedItem, setSelectedItem] = useState<number>(0);
+  const [selectedItem, setSelectedItem] = useState<ItemData | null>(null);
   const [showDiv, setShowDiv] = useState<boolean>(false);
   const [showArrowButton, setShowArrowButton] = useState<boolean>(false);
   const [divHeight, setDivHeight] = useState<number>(0);
@@ -81,38 +83,6 @@ const AiAssistant = ({
   // Constants
   const DEAFULT_WIDGET_HEIGHT = 200;
 
-  // Fill itemDataList with ItemData objects from the itemList
-  useEffect(() => {
-    const tempItemDataList: ItemData[] = [];
-    itemList.forEach((item) => {
-      tempItemDataList.push({
-        title: item.title,
-        subtitle: item.subtitle,
-        prompt: item.prompt,
-        payload: item.payload,
-        content: "",
-        id: "",
-      });
-    });
-    setItemDataList(tempItemDataList);
-    setUpdateItemData(!updateItemdata);
-  }, [itemList, selectedTitle]);
-
-  // Fill insightList with data from API response
-  useEffect(() => {
-    if (insightData && Object.keys(insightData).length && itemDataList.length) {
-      if (itemDataList.length) {
-        const index = itemDataList.findIndex(
-          (x) => x.subtitle === insightData?.prompt
-        );
-        itemDataList[index].content = insightData?.choices[0]?.message?.content;
-        itemDataList[index].id = insightData?.id;
-      }
-      setItemDataList(itemDataList);
-      setUpdateItemData(!updateItemdata);
-    }
-  }, [insightData]);
-
   // Default widget button show and hide
   useEffect(() => {
     onClickPopupButton();
@@ -123,44 +93,6 @@ const AiAssistant = ({
     setShowWidget(showPopUp || false);
   }, [showPopUp]);
 
-  // Call API when selecting a recommendation for a single item from the demo site list
-  useEffect(() => {
-    setSelectedTitleData(selectedTitle);
-
-    if (selectedTitle) {
-      setInsightData({});
-
-      const index = itemList.findIndex((x) => x.subtitle === selectedTitle);
-
-      if (showWidget) {
-        (async () => {
-          if (await engine.validateApiKey()) {
-            let questionPrompts = [];
-            questionPrompts.push(selectedTitle);
-            await getInsights(questionPrompts, index);
-          } else {
-            setShowStatusError(true);
-          }
-        })();
-      } else {
-        setShowWidget(true);
-      }
-
-      setShowDetails(true);
-      if (index === -1) {
-        setSelectedItem(0);
-      } else {
-        setSelectedItem(index);
-      }
-    }
-  }, [selectedTitle]);
-
-  // Set height of widget pop when item data is received from API success response
-  useEffect(() => {
-    if (!itemDataList[selectedItem]?.content) {
-      setDivHeight(DEAFULT_WIDGET_HEIGHT);
-    }
-  }, [itemDataList[selectedItem]]);
 
   // useSpring for animating widget popup
   const springProps = useSpring({
@@ -227,46 +159,13 @@ const AiAssistant = ({
       }
 
       if (await engine.validateApiKey()) {
-        await getInsights(questionPrompts);
+
       } else {
         setShowStatusError(true);
         setDivHeight(DEAFULT_WIDGET_HEIGHT);
       }
     }
   };
-
-  // Get insights from OpenAI API
-  const getInsights = async (promptsData: string[]) => {
-    let response = {};
-    let errorPromises: string[] = []; // Fix the declaration and initialization
-    const promises = await engine.generateTextList(promptsData);
-  
-    while (promises.length > 0) {
-      const completedIndex = await Promise.race(
-        promises.map((promise, index) =>
-          Promise.resolve(promise).then(() => index)
-        )
-      );
-      const completedPromise = promises[completedIndex];
-      promises.splice(completedIndex, 1);
-      response = await completedPromise;
-  
-      if (!response?.error) {
-        setInsightData(response);
-      } else {
-        errorPromises.push(response?.prompt);
-      }
-    }
-  
-    if (errorPromises.length > 0) {
-      setTimeout(async () => {
-        await getInsights(errorPromises);
-      }, 7000);
-    } else {
-      errorPromises = [];
-    }
-  };
-  
 
   // Go back to the item list
   const onClickBackButton = () => {
@@ -292,16 +191,6 @@ const AiAssistant = ({
     }
   };
 
-  // // Send a query to the chatbot
-  // const chatBot = async () => {
-  //   try {
-  //     const itemResponse = await engine.chatBotResponse(searchItem);
-  //     receiveQueryResponse(itemResponse?.data);
-  //     setSearchItem("");
-  //   } catch (error) {
-  //     console.error(error, "ERROR");
-  //   }
-  // };
 
   return (
     <>
@@ -361,7 +250,7 @@ const AiAssistant = ({
                     id="detailif"
                     ref={ref}
                     color={color}
-                    itemData={itemDataList[selectedItem]}
+                    itemData={selectedItem}
                     updateItemData={updateItemdata}
                     onSetHeight={onSetHeight}
                     placeholder={placeholder}
@@ -374,7 +263,7 @@ const AiAssistant = ({
                       key={index}
                       onClickList={() => {
                         onClickList(item.title);
-                        setSelectedItem(index);
+                        setSelectedItem(itemList[index]);
                       }}
                       color={color}
                     />

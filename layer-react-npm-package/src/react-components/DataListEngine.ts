@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { OpenAI } from "langchain/llms/openai";
+
 
 export interface DataListEngine {
 
@@ -12,26 +14,33 @@ export interface DataListEngine {
   validateApiKey(): Promise<boolean>;
 
   // An async method that takes as input a two string variables and returns a Promise, it makes an API call to the openAI API // makes use of the openAIKey
-  generateText(prompt: string): Promise<string>;
+  generateText(prompt: string): [string, string];
 
-  // An async method that takes as input a one string query variable and returns a Promise, it makes an API call to langchain in nodeJs  // makes use of the anwers of query
-  chatBotResponse(prompts: string): Promise<string>
 
   // An async method that takes in a list of string prompts, the function makes an API call to the openAI API
   // for every prompt in the list and returns a Promise that when resolved should contain list of strings // makes use of the openAIKey
-  generateTextList(prompts: string[]): Promise<string[]>;
+  generateTextList(prompts: string[]): [string, string][];
+}
+
+enum ResponseStatus {
+  WAITING = "WAITING",
+  SUCCESS = "SUCCESS",
+  ERROR = "ERROR",
+  ABORTED = "ABORTED",
 }
 
 
 export class MyDataListEngine implements DataListEngine {
   openAIKey: string;
   layerKey: string;
+  model: OpenAI;
 
-  cache: Map<string, string> = new Map();
+  cache: Map<string, [string, string]> = new Map();
 
   constructor() {
     this.openAIKey = process.env.REACT_APP_OPEN_AI_API_KEY || "";
     this.layerKey = process.env.REACT_APP_LAYER_SDK_KEY || "";
+    this.model = new OpenAI({ openAIApiKey: this.openAIKey, temperature: 0.9 });
   }
 
   // verify the openAi key 
@@ -46,42 +55,31 @@ export class MyDataListEngine implements DataListEngine {
     return res?.status === 401 ? false : true;
   };
 
-  // call langchain streaming api and get the response  
-  chatBotResponse = async (searchItemData: string): Promise<any> => {
-    const res = await axios.get(
-      `http://localhost:5000?query=${searchItemData}`
-    );
-    return res;
-  };
-
-  async generateText(prompt: string): Promise<string> {
-    // Sends a POST request to the OpenAI API to generate text based on the given prompt
-    // Returns the generated text
-    const res = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${this.openAIKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "gpt-3.5-turbo",
-        messages: [
-          { role: "user", content: prompt },
-        ],
-      }),
-    });
-
-    let data = await res.json();
-    data.prompt = prompt;
-    return data;
+  async callAPI(prompt: string) {
+    const res = await this.model.call(prompt);
+    this.cache.set(prompt, [ResponseStatus.SUCCESS, res]);
   }
 
-  async generateTextList(prompts: string[]): Promise<string[]> {
-    const promises = <any>[];
+
+  generateText(prompt: string): [string, string] {
+
+    // Check if the prompt is already in the cache
+    if (this.cache.has(prompt)) {
+      return this.cache.get(prompt) || [ResponseStatus.ERROR, "An error occured"];
+    }
+    
+    this.cache.set(prompt, [ResponseStatus.WAITING, ""]);
+    this.callAPI(prompt);
+
+    return this.cache.get(prompt) || [ResponseStatus.WAITING, "getting response..."];
+  }
+
+  generateTextList(prompts: string[]): [string, string][] {
+    const responses: [string, string][] = [];
     prompts.forEach(url => {
-      const promise = this.generateText(url);
-      promises.push(promise);
+      const str = this.generateText(url);
+      responses.push(str);
     });
-    return promises;
+    return responses;
   }
 }
