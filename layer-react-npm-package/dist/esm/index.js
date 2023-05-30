@@ -1,7 +1,7 @@
 import * as React from 'react';
 import React__default, { forwardRef, useRef, useState, useImperativeHandle, useEffect, useLayoutEffect, useCallback, useContext, useMemo } from 'react';
+import axios from 'axios';
 import { unstable_batchedUpdates } from 'react-dom';
-import 'axios';
 
 /******************************************************************************
 Copyright (c) Microsoft Corporation.
@@ -79,16 +79,6 @@ function __generator(thisArg, body) {
     }
 }
 
-function __spreadArray(to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
-}
-
 function styleInject(css, ref) {
   if ( ref === void 0 ) ref = {};
   var insertAt = ref.insertAt;
@@ -157,7 +147,7 @@ var css_248z$3 = ".ai-assistant-item-details-main-container {\n  background-colo
 styleInject(css_248z$3);
 
 var ItemDetail = forwardRef(function (_a, ref) {
-    var color = _a.color; _a.id; var itemData = _a.itemData, onSetHeight = _a.onSetHeight, placeholder = _a.placeholder, updateItemData = _a.updateItemData;
+    var color = _a.color; _a.id; var itemData = _a.itemData, onSetHeight = _a.onSetHeight, placeholder = _a.placeholder, updateItemData = _a.updateItemData, receiveInsights = _a.receiveInsights;
     var refForDiv = useRef(null);
     var _b = useState({
         title: itemData.title,
@@ -173,6 +163,10 @@ var ItemDetail = forwardRef(function (_a, ref) {
         },
     }); });
     useEffect(function () {
+        var _a;
+        if (item === null || item === void 0 ? void 0 : item.content) {
+            receiveInsights((_a = {}, _a[itemData.id] = itemData === null || itemData === void 0 ? void 0 : itemData.content, _a));
+        }
         setItem(__assign(__assign({}, itemData), { content: itemData.content || placeholder }));
         if ((itemData === null || itemData === void 0 ? void 0 : itemData.content) && (itemData === null || itemData === void 0 ? void 0 : itemData.content.length) > 18) {
             if ((itemData === null || itemData === void 0 ? void 0 : itemData.content.length) > 550) {
@@ -246,23 +240,47 @@ var InvalidApiKeyError = function (_a) {
 
 var MyDataListEngine = /** @class */ (function () {
     function MyDataListEngine() {
+        var _this = this;
         this.cache = new Map();
+        // verify the openAi key 
+        this.validateApiKey = function () { return __awaiter(_this, void 0, void 0, function () {
+            var res;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, fetch("https://api.openai.com/v1/models", {
+                            method: "GET",
+                            headers: {
+                                "Content-Type": "application/json",
+                                Authorization: "Bearer ".concat(this.openAIKey),
+                            },
+                        })];
+                    case 1:
+                        res = _a.sent();
+                        return [2 /*return*/, (res === null || res === void 0 ? void 0 : res.status) === 401 ? false : true];
+                }
+            });
+        }); };
+        // call langchain streaming api and get the response  
+        this.chatBotResponse = function (searchItemData) { return __awaiter(_this, void 0, void 0, function () {
+            var res;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, axios.get("http://localhost:5000?query=".concat(searchItemData))];
+                    case 1:
+                        res = _a.sent();
+                        return [2 /*return*/, res];
+                }
+            });
+        }); };
         this.openAIKey = process.env.REACT_APP_OPEN_AI_API_KEY || "";
         this.layerKey = process.env.REACT_APP_LAYER_SDK_KEY || "";
     }
-    MyDataListEngine.prototype.validateKeys = function () {
-        // Your implementation here to validate the API keys
-        return true;
-    };
     MyDataListEngine.prototype.generateText = function (prompt) {
         return __awaiter(this, void 0, void 0, function () {
             var res, data;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0:
-                        if (!this.cache.has(prompt)) return [3 /*break*/, 1];
-                        return [2 /*return*/, this.cache.get(prompt) || ""];
-                    case 1: return [4 /*yield*/, fetch("https://api.openai.com/v1/chat/completions", {
+                    case 0: return [4 /*yield*/, fetch("https://api.openai.com/v1/chat/completions", {
                             method: "POST",
                             headers: {
                                 Authorization: "Bearer ".concat(this.openAIKey),
@@ -275,11 +293,12 @@ var MyDataListEngine = /** @class */ (function () {
                                 ],
                             }),
                         })];
-                    case 2:
+                    case 1:
                         res = _a.sent();
                         return [4 /*yield*/, res.json()];
-                    case 3:
+                    case 2:
                         data = _a.sent();
+                        data.prompt = prompt;
                         return [2 /*return*/, data];
                 }
             });
@@ -287,26 +306,15 @@ var MyDataListEngine = /** @class */ (function () {
     };
     MyDataListEngine.prototype.generateTextList = function (prompts) {
         return __awaiter(this, void 0, void 0, function () {
-            var responses, _i, prompts_1, prompt_1, response;
+            var promises;
+            var _this = this;
             return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        responses = [];
-                        _i = 0, prompts_1 = prompts;
-                        _a.label = 1;
-                    case 1:
-                        if (!(_i < prompts_1.length)) return [3 /*break*/, 4];
-                        prompt_1 = prompts_1[_i];
-                        return [4 /*yield*/, this.generateText(prompt_1)];
-                    case 2:
-                        response = _a.sent();
-                        responses.push(response);
-                        _a.label = 3;
-                    case 3:
-                        _i++;
-                        return [3 /*break*/, 1];
-                    case 4: return [2 /*return*/, responses];
-                }
+                promises = [];
+                prompts.forEach(function (url) {
+                    var promise = _this.generateText(url);
+                    promises.push(promise);
+                });
+                return [2 /*return*/, promises];
             });
         });
     };
@@ -323,6 +331,7 @@ function I$1(t,...e){return l$1.fun(t)?t(...e):t}var te=(t,e)=>t===!0||!!(e&&t&&
 
 var k=/^--/;function I(t,e){return e==null||typeof e=="boolean"||e===""?"":typeof e=="number"&&e!==0&&!k.test(t)&&!(c.hasOwnProperty(t)&&c[t])?e+"px":(""+e).trim()}var v={};function V(t,e){if(!t.nodeType||!t.setAttribute)return !1;let r=t.nodeName==="filter"||t.parentNode&&t.parentNode.nodeName==="filter",{style:i,children:s,scrollTop:u,scrollLeft:l,viewBox:a,...n}=e,d=Object.values(n),m=Object.keys(n).map(o=>r||t.hasAttribute(o)?o:v[o]||(v[o]=o.replace(/([A-Z])/g,p=>"-"+p.toLowerCase())));s!==void 0&&(t.textContent=s);for(let o in i)if(i.hasOwnProperty(o)){let p=I(o,i[o]);k.test(o)?t.style.setProperty(o,p):t.style[o]=p;}m.forEach((o,p)=>{t.setAttribute(o,d[p]);}),u!==void 0&&(t.scrollTop=u),l!==void 0&&(t.scrollLeft=l),a!==void 0&&t.setAttribute("viewBox",a);}var c={animationIterationCount:!0,borderImageOutset:!0,borderImageSlice:!0,borderImageWidth:!0,boxFlex:!0,boxFlexGroup:!0,boxOrdinalGroup:!0,columnCount:!0,columns:!0,flex:!0,flexGrow:!0,flexPositive:!0,flexShrink:!0,flexNegative:!0,flexOrder:!0,gridRow:!0,gridRowEnd:!0,gridRowSpan:!0,gridRowStart:!0,gridColumn:!0,gridColumnEnd:!0,gridColumnSpan:!0,gridColumnStart:!0,fontWeight:!0,lineClamp:!0,lineHeight:!0,opacity:!0,order:!0,orphans:!0,tabSize:!0,widows:!0,zIndex:!0,zoom:!0,fillOpacity:!0,floodOpacity:!0,stopOpacity:!0,strokeDasharray:!0,strokeDashoffset:!0,strokeMiterlimit:!0,strokeOpacity:!0,strokeWidth:!0},F=(t,e)=>t+e.charAt(0).toUpperCase()+e.substring(1),L=["Webkit","Ms","Moz","O"];c=Object.keys(c).reduce((t,e)=>(L.forEach(r=>t[F(r,e)]=t[e]),t),c);var _=/^(matrix|translate|scale|rotate|skew)/,$=/^(translate)/,G=/^(rotate|skew)/,y=(t,e)=>l$1.num(t)&&t!==0?t+e:t,h=(t,e)=>l$1.arr(t)?t.every(r=>h(r,e)):l$1.num(t)?t===e:parseFloat(t)===e,g=class extends u{constructor({x:e,y:r,z:i,...s}){let u=[],l=[];(e||r||i)&&(u.push([e||0,r||0,i||0]),l.push(a=>[`translate3d(${a.map(n=>y(n,"px")).join(",")})`,h(a,0)])),xt(s,(a,n)=>{if(n==="transform")u.push([a||""]),l.push(d=>[d,d===""]);else if(_.test(n)){if(delete s[n],l$1.und(a))return;let d=$.test(n)?"px":G.test(n)?"deg":"";u.push(ht$1(a)),l.push(n==="rotate3d"?([m,o,p,O])=>[`rotate3d(${m},${o},${p},${y(O,d)})`,h(O,0)]:m=>[`${n}(${m.map(o=>y(o,d)).join(",")})`,h(m,n.startsWith("scale")?1:0)]);}}),u.length&&(s.transform=new x(u,l)),super(s);}},x=class extends ge{constructor(r,i){super();this.inputs=r;this.transforms=i;}_value=null;get(){return this._value||(this._value=this._get())}_get(){let r="",i=!0;return Ve(this.inputs,(s,u)=>{let l=ve(s[0]),[a,n]=this.transforms[u](l$1.arr(l)?l:s.map(ve));r+=" "+a,i=i&&n;}),i?"none":r}observerAdded(r){r==1&&Ve(this.inputs,i=>Ve(i,s=>Pt(s)&&Gt(s,this)));}observerRemoved(r){r==0&&Ve(this.inputs,i=>Ve(i,s=>Pt(s)&&Qt(s,this)));}eventObserved(r){r.type=="change"&&(this._value=null),$t(this,r);}};var C=["a","abbr","address","area","article","aside","audio","b","base","bdi","bdo","big","blockquote","body","br","button","canvas","caption","cite","code","col","colgroup","data","datalist","dd","del","details","dfn","dialog","div","dl","dt","em","embed","fieldset","figcaption","figure","footer","form","h1","h2","h3","h4","h5","h6","head","header","hgroup","hr","html","i","iframe","img","input","ins","kbd","keygen","label","legend","li","link","main","map","mark","menu","menuitem","meta","meter","nav","noscript","object","ol","optgroup","option","output","p","param","picture","pre","progress","q","rp","rt","ruby","s","samp","script","section","select","small","source","span","strong","style","sub","summary","sup","table","tbody","td","textarea","tfoot","th","thead","time","title","tr","track","u","ul","var","video","wbr","circle","clipPath","defs","ellipse","foreignObject","g","image","line","linearGradient","mask","path","pattern","polygon","polyline","radialGradient","rect","stop","svg","text","tspan"];p.assign({batchedUpdates:unstable_batchedUpdates,createStringInterpolator:Xt,colors:It});var q=Ke(C,{applyAnimatedValues:V,createAnimatedStyle:t=>new g(t),getComponentProps:({scrollTop:t,scrollLeft:e,...r})=>r}),it=q.animated;
 
+// Error content for OpenAI invalid key
 var errorView = {
     title: "401 Error",
     message: "This is likely a problem with your OpenAI API key. Check if your api key is still enabled.",
@@ -330,39 +339,27 @@ var errorView = {
 var AiAssistant = function (_a) {
     var title = _a.title, itemList = _a.itemList, color = _a.color, image = _a.image, showPopUp = _a.showPopUp, showButton = _a.showButton, placeholder = _a.placeholder, selectedTitle = _a.selectedTitle, receiveInsights = _a.receiveInsights; _a.receiveQueryResponse;
     var engine = new MyDataListEngine();
-    if (!engine.validateKeys()) {
-        return React__default.createElement(EnvironmentError, { color: "#FF0000" });
-    }
+    // State variables
     var _b = useState(selectedTitle), selectedTitleData = _b[0], setSelectedTitleData = _b[1];
-    var _c = useState(""); _c[0]; _c[1];
-    var _d = useState(false), showWidget = _d[0], setShowWidget = _d[1];
-    var _e = useState(false), showDetails = _e[0], setShowDetails = _e[1];
-    var _f = useState(false), showEnvError = _f[0]; _f[1];
-    var _g = useState(false), showStatusError = _g[0], setShowStatusError = _g[1];
-    var _h = useState(false), updateItemdata = _h[0], setUpdateItemData = _h[1];
-    var _j = useState([]), itemDataList = _j[0], setItemDataList = _j[1];
-    var _k = useState(0), selectedItem = _k[0], setSelectedItem = _k[1];
-    var _l = useState(false), showDiv = _l[0], setShowDiv = _l[1];
-    var _m = useState(false), showArrowButton = _m[0], setShowArrowButton = _m[1];
-    var _o = useState(0), divHeight = _o[0], setDivHeight = _o[1];
-    var _p = useState([]), insightList = _p[0], setInsightList = _p[1];
-    var _q = useState([]), failedRequestIndexes = _q[0], setFailedRequestIndexes = _q[1];
-    var _r = useState([]), errorPrompts = _r[0], setErrorPrompts = _r[1];
-    var _s = useState(false), resendRequests = _s[0], setResendRequests = _s[1];
-    var _t = useState([]), prompts = _t[0], setPrompts = _t[1];
+    // const [searchItem, setSearchItem] = useState<string>("");
+    var _c = useState(false), showWidget = _c[0], setShowWidget = _c[1];
+    var _d = useState(false), showDetails = _d[0], setShowDetails = _d[1];
+    var _e = useState(false), showEnvError = _e[0]; _e[1];
+    var _f = useState(false), showStatusError = _f[0], setShowStatusError = _f[1];
+    var _g = useState(false), updateItemdata = _g[0], setUpdateItemData = _g[1];
+    var _h = useState([]), itemDataList = _h[0], setItemDataList = _h[1];
+    var _j = useState(0), selectedItem = _j[0], setSelectedItem = _j[1];
+    var _k = useState(false), showDiv = _k[0], setShowDiv = _k[1];
+    var _l = useState(false), showArrowButton = _l[0], setShowArrowButton = _l[1];
+    var _m = useState(0), divHeight = _m[0], setDivHeight = _m[1];
+    var _o = useState({}), insightData = _o[0], setInsightData = _o[1];
+    // Refs
     var ref = useRef();
     var refPopUp = useRef(null);
     var refBackButton = useRef(null);
-    var DEAFULT_HEIGHT = 200;
-    useEffect(function () {
-        var once = (function () {
-            return function () {
-                getInsights(itemList.map(function (x) { return x.payload; }), 0);
-            };
-        })();
-        once();
-    }, [itemList]);
-    // Create a useEffect hook that fills itemDataList wiht ItemData objects from the itemList
+    // Constants
+    var DEAFULT_WIDGET_HEIGHT = 200;
+    // Fill itemDataList with ItemData objects from the itemList
     useEffect(function () {
         var tempItemDataList = [];
         itemList.forEach(function (item) {
@@ -372,93 +369,50 @@ var AiAssistant = function (_a) {
                 prompt: item.prompt,
                 payload: item.payload,
                 content: "",
+                id: "",
             });
         });
         setItemDataList(tempItemDataList);
         setUpdateItemData(!updateItemdata);
     }, [itemList, selectedTitle]);
-    // Create a useEffect hook that fills insightList with insightList coming from api response
+    // Fill insightList with data from API response
     useEffect(function () {
-        if (insightList.length && itemDataList.length) {
-            insightList.forEach(function (item, index) {
-                var _a, _b, _c;
-                if ((_a = Object.keys(itemDataList[item === null || item === void 0 ? void 0 : item.index])) === null || _a === void 0 ? void 0 : _a.length) {
-                    itemDataList[item === null || item === void 0 ? void 0 : item.index].content = (_c = (_b = item === null || item === void 0 ? void 0 : item.choices[0]) === null || _b === void 0 ? void 0 : _b.message) === null || _c === void 0 ? void 0 : _c.content;
-                }
-            });
-            if (itemList.length === insightList.length) {
-                var convertInsightsJson = Object.assign.apply(Object, __spreadArray([{}], insightList.map(function (x) {
-                    var _a;
-                    var _b, _c;
-                    return (_a = {},
-                        _a[x.id] = (_c = (_b = x.choices[0]) === null || _b === void 0 ? void 0 : _b.message) === null || _c === void 0 ? void 0 : _c.content,
-                        _a);
-                }), false));
-                receiveInsights(convertInsightsJson);
+        var _a, _b;
+        if (insightData && Object.keys(insightData).length && itemDataList.length) {
+            if (itemDataList.length) {
+                var index = itemDataList.findIndex(function (x) { return x.subtitle === (insightData === null || insightData === void 0 ? void 0 : insightData.prompt); });
+                itemDataList[index].content = (_b = (_a = insightData === null || insightData === void 0 ? void 0 : insightData.choices[0]) === null || _a === void 0 ? void 0 : _a.message) === null || _b === void 0 ? void 0 : _b.content;
+                itemDataList[index].id = insightData === null || insightData === void 0 ? void 0 : insightData.id;
             }
             setItemDataList(itemDataList);
             setUpdateItemData(!updateItemdata);
         }
-    }, [insightList]);
-    // Create a useEffect hook that fills insightList with insightList coming from api response
-    useEffect(function () {
-        if (insightList.length && itemDataList.length) {
-            insightList.forEach(function (item, index) {
-                var _a, _b, _c;
-                if ((_a = Object.keys(itemDataList[item === null || item === void 0 ? void 0 : item.index])) === null || _a === void 0 ? void 0 : _a.length) {
-                    itemDataList[item === null || item === void 0 ? void 0 : item.index].content = (_c = (_b = item === null || item === void 0 ? void 0 : item.choices[0]) === null || _b === void 0 ? void 0 : _b.message) === null || _c === void 0 ? void 0 : _c.content;
-                }
-            });
-            if (itemList.length === insightList.length) {
-                var convertInsightsJson = Object.assign.apply(Object, __spreadArray([{}], insightList.map(function (x) {
-                    var _a;
-                    var _b, _c;
-                    return (_a = {},
-                        _a[x.id] = (_c = (_b = x.choices[0]) === null || _b === void 0 ? void 0 : _b.message) === null || _c === void 0 ? void 0 : _c.content,
-                        _a);
-                }), false));
-                receiveInsights(convertInsightsJson);
-            }
-            setItemDataList(itemDataList);
-            setUpdateItemData(!updateItemdata);
-        }
-    }, [insightList]);
+    }, [insightData]);
+    // Default widget button show and hide
     useEffect(function () {
         onClickPopupButton();
     }, [showWidget]);
+    // Extra widget button show and hide from demo site
     useEffect(function () {
         setShowWidget(showPopUp || false);
     }, [showPopUp]);
-    useEffect(function () {
-        if ((errorPrompts === null || errorPrompts === void 0 ? void 0 : errorPrompts.length) && showWidget) {
-            setTimeout(function () { return __awaiter(void 0, void 0, void 0, function () {
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0: return [4 /*yield*/, getInsights(errorPrompts, selectedItem)];
-                        case 1:
-                            _a.sent();
-                            return [2 /*return*/];
-                    }
-                });
-            }); }, 7000);
-        }
-    }, [resendRequests]);
+    // Call API when selecting a recommendation for a single item from the demo site list
     useEffect(function () {
         setSelectedTitleData(selectedTitle);
         if (selectedTitle) {
-            setInsightList([]);
+            setInsightData({});
             var index_1 = itemList.findIndex(function (x) { return x.subtitle === selectedTitle; });
             if (showWidget) {
                 (function () { return __awaiter(void 0, void 0, void 0, function () {
                     var questionPrompts;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
-                            case 0: return [4 /*yield*/, validateApiKey()];
+                            case 0: return [4 /*yield*/, engine.validateApiKey()];
                             case 1:
                                 if (!_a.sent()) return [3 /*break*/, 3];
                                 questionPrompts = [];
                                 questionPrompts.push(selectedTitle);
-                                return [4 /*yield*/, getInsights(questionPrompts, index_1)];
+                                return [4 /*yield*/, getInsights(questionPrompts)];
                             case 2:
                                 _a.sent();
                                 return [3 /*break*/, 4];
@@ -482,12 +436,14 @@ var AiAssistant = function (_a) {
             }
         }
     }, [selectedTitle]);
+    // Set height of widget pop when item data is received from API success response
     useEffect(function () {
         var _a;
         if (!((_a = itemDataList[selectedItem]) === null || _a === void 0 ? void 0 : _a.content)) {
-            setDivHeight(DEAFULT_HEIGHT);
+            setDivHeight(DEAFULT_WIDGET_HEIGHT);
         }
     }, [itemDataList[selectedItem]]);
+    // useSpring for animating widget popup
     var springProps = J({
         height: showDiv ? "".concat(divHeight, "px") : "0",
         opacity: showDiv ? 1 : 0,
@@ -500,28 +456,22 @@ var AiAssistant = function (_a) {
         marginRight: showArrowButton ? "0" : "-34px",
         trans: [0, 1, 2],
     });
+    // Select item from recommendation itemListData
     var onClickList = function (title) { return __awaiter(void 0, void 0, void 0, function () {
-        var _a, _b, _c;
-        return __generator(this, function (_d) {
+        return __generator(this, function (_a) {
             setShowDetails(true);
             setTimeout(function () {
                 setShowArrowButton(true);
             }, 1700);
-            try {
-                setDivHeight(DEAFULT_HEIGHT);
-                itemDataList[selectedItem].content =
-                    (_c = (_b = (_a = insightList[selectedItem]) === null || _a === void 0 ? void 0 : _a.choices[0]) === null || _b === void 0 ? void 0 : _b.message) === null || _c === void 0 ? void 0 : _c.content;
-            }
-            catch (error) {
-                setDivHeight(DEAFULT_HEIGHT);
-                console.log(error);
-            }
+            setDivHeight(DEAFULT_WIDGET_HEIGHT);
             return [2 /*return*/];
         });
     }); };
+    // create function for setDivHeight
     var onSetHeight = function (height) {
         setDivHeight(height);
     };
+    // Show or hide the widget popup
     var onClickPopupButton = function () { return __awaiter(void 0, void 0, void 0, function () {
         var timer_1, questionPrompts;
         return __generator(this, function (_a) {
@@ -532,7 +482,7 @@ var AiAssistant = function (_a) {
                     }
                     if (!!showWidget) return [3 /*break*/, 1];
                     setShowDiv(false);
-                    setInsightList([]);
+                    setInsightData({});
                     if (refPopUp.current) {
                         refPopUp.current.className = "main-popup-container-animate-end";
                         timer_1 = setTimeout(function () {
@@ -556,93 +506,75 @@ var AiAssistant = function (_a) {
                         questionPrompts.push(selectedTitle);
                     }
                     else {
-                        questionPrompts = itemList.map(function (x) { return x.payload; });
+                        questionPrompts = itemList.map(function (x) { return x.subtitle; });
                     }
-                    setPrompts(questionPrompts);
-                    return [4 /*yield*/, validateApiKey()];
+                    return [4 /*yield*/, engine.validateApiKey()];
                 case 2:
                     if (!_a.sent()) return [3 /*break*/, 4];
-                    return [4 /*yield*/, getInsights(questionPrompts, selectedItem)];
+                    return [4 /*yield*/, getInsights(questionPrompts)];
                 case 3:
                     _a.sent();
                     return [3 /*break*/, 5];
                 case 4:
                     setShowStatusError(true);
-                    setDivHeight(DEAFULT_HEIGHT);
+                    setDivHeight(DEAFULT_WIDGET_HEIGHT);
                     _a.label = 5;
                 case 5: return [2 /*return*/];
             }
         });
     }); };
-    // make a hook that makes sure getInsights is called only once
-    var _u = useState(false), calledInsights = _u[0], setCalledInsights = _u[1];
-    var getInsights = function (promptsData, selectedIndex) { return __awaiter(void 0, void 0, void 0, function () {
-        var response, failedArrIndexes_1, filteredResponse_1, newPromptsData_1, newPromtData_1;
+    // Get insights from OpenAI API
+    var getInsights = function (promptsData) { return __awaiter(void 0, void 0, void 0, function () {
+        var response, errorPromises, promises, completedIndex, completedPromise;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    if (!!calledInsights) return [3 /*break*/, 2];
-                    console.log("getInsights");
-                    response = void 0;
+                    response = {};
+                    errorPromises = [];
                     return [4 /*yield*/, engine.generateTextList(promptsData)];
                 case 1:
+                    promises = _a.sent();
+                    _a.label = 2;
+                case 2:
+                    if (!(promises.length > 0)) return [3 /*break*/, 5];
+                    return [4 /*yield*/, Promise.race(promises.map(function (promise, index) {
+                            return Promise.resolve(promise).then(function () { return index; });
+                        }))];
+                case 3:
+                    completedIndex = _a.sent();
+                    completedPromise = promises[completedIndex];
+                    promises.splice(completedIndex, 1);
+                    return [4 /*yield*/, completedPromise];
+                case 4:
                     response = _a.sent();
-                    failedArrIndexes_1 = [];
-                    filteredResponse_1 = [];
-                    response.forEach(function (x, index) {
-                        if (x.error) {
-                            failedArrIndexes_1.push(failedRequestIndexes.length ? failedRequestIndexes[index] : index);
-                        }
-                    });
-                    setFailedRequestIndexes(failedArrIndexes_1);
-                    if (response.filter(function (x) { return !x.error; }).length) {
-                        filteredResponse_1 = response.map(function (x, i) {
-                            return __assign(__assign({}, x), { index: selectedTitleData ? selectedIndex : failedRequestIndexes[i] || i });
-                        });
+                    if (!(response === null || response === void 0 ? void 0 : response.error)) {
+                        setInsightData(response);
                     }
                     else {
-                        filteredResponse_1 = response.map(function (x, i) {
-                            return __assign(__assign({}, x), { index: selectedTitleData ? selectedIndex : i });
-                        });
+                        errorPromises.push(response === null || response === void 0 ? void 0 : response.prompt);
                     }
-                    setInsightList(function (prev) { return __spreadArray(__spreadArray([], prev, true), filteredResponse_1.filter(function (x) { return !x.error; }), true); });
-                    newPromptsData_1 = prompts.length ? prompts : promptsData;
-                    newPromtData_1 = [];
-                    filteredResponse_1.forEach(function (x, i) {
-                        if (x.error && x.error.message.includes("Rate limit reached")) {
-                            if (newPromptsData_1[i]) {
-                                newPromtData_1.push(newPromptsData_1[i]);
-                            }
-                        }
-                    });
-                    setPrompts(newPromtData_1);
-                    setErrorPrompts(newPromtData_1);
-                    if (newPromtData_1.length) {
-                        setResendRequests(!resendRequests);
+                    return [3 /*break*/, 2];
+                case 5:
+                    if (errorPromises.length > 0) {
+                        setTimeout(function () { return __awaiter(void 0, void 0, void 0, function () {
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0: return [4 /*yield*/, getInsights(errorPromises)];
+                                    case 1:
+                                        _a.sent();
+                                        return [2 /*return*/];
+                                }
+                            });
+                        }); }, 7000);
                     }
-                    setCalledInsights(true);
-                    _a.label = 2;
-                case 2: return [2 /*return*/];
+                    else {
+                        errorPromises = [];
+                    }
+                    return [2 /*return*/];
             }
         });
     }); };
-    var validateApiKey = function () { return __awaiter(void 0, void 0, void 0, function () {
-        var res;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, fetch("https://api.openai.com/v1/models", {
-                        method: "GET",
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: "Bearer ".concat(engine.openAIKey),
-                        },
-                    })];
-                case 1:
-                    res = _a.sent();
-                    return [2 /*return*/, (res === null || res === void 0 ? void 0 : res.status) === 401 ? false : true];
-            }
-        });
-    }); };
+    // Go back to the item list
     var onClickBackButton = function () {
         setShowDetails(true);
         setTimeout(function () {
@@ -665,6 +597,16 @@ var AiAssistant = function (_a) {
             setShowDetails(true);
         }
     };
+    // // Send a query to the chatbot
+    // const chatBot = async () => {
+    //   try {
+    //     const itemResponse = await engine.chatBotResponse(searchItem);
+    //     receiveQueryResponse(itemResponse?.data);
+    //     setSearchItem("");
+    //   } catch (error) {
+    //     console.error(error, "ERROR");
+    //   }
+    // };
     return (React__default.createElement(React__default.Fragment, null,
         React__default.createElement("div", { className: "ai-assistant-main-container" },
             showButton && (React__default.createElement(Button, { style: { backgroundColor: color }, className: "main-popup-button", onClick: function () {
@@ -680,7 +622,7 @@ var AiAssistant = function (_a) {
                             React__default.createElement(ArrowRightIcon, { color: color })),
                         React__default.createElement("div", { className: "header-text-container" },
                             React__default.createElement(Text, { className: "header-text-style", label: title.toLowerCase() }))),
-                    React__default.createElement("div", { className: "main-item-list-container" }, showDetails ? (React__default.createElement(ItemDetail, { id: "detailif", ref: ref, color: color, itemData: itemDataList[selectedItem], updateItemData: updateItemdata, onSetHeight: onSetHeight, placeholder: placeholder })) : (itemList.map(function (item, index) { return (React__default.createElement(ListItem, { item: item, key: index, onClickList: function () {
+                    React__default.createElement("div", { className: "main-item-list-container" }, showDetails ? (React__default.createElement(ItemDetail, { id: "detailif", ref: ref, color: color, itemData: itemDataList[selectedItem], updateItemData: updateItemdata, onSetHeight: onSetHeight, placeholder: placeholder, receiveInsights: receiveInsights })) : (itemList.map(function (item, index) { return (React__default.createElement(ListItem, { item: item, key: index, onClickList: function () {
                             onClickList(item.title);
                             setSelectedItem(index);
                         }, color: color })); })))))))));

@@ -9,15 +9,19 @@ export interface DataListEngine {
   layerKey: string;
 
   // A method that validates openAIKey and LayerKey
-  validateKeys(): boolean;
+  validateApiKey(): Promise<boolean>;
 
   // An async method that takes as input a two string variables and returns a Promise, it makes an API call to the openAI API // makes use of the openAIKey
   generateText(prompt: string): Promise<string>;
+
+  // An async method that takes as input a one string query variable and returns a Promise, it makes an API call to langchain in nodeJs  // makes use of the anwers of query
+  chatBotResponse(prompts: string): Promise<string>
 
   // An async method that takes in a list of string prompts, the function makes an API call to the openAI API
   // for every prompt in the list and returns a Promise that when resolved should contain list of strings // makes use of the openAIKey
   generateTextList(prompts: string[]): Promise<string[]>;
 }
+
 
 export class MyDataListEngine implements DataListEngine {
   openAIKey: string;
@@ -30,46 +34,54 @@ export class MyDataListEngine implements DataListEngine {
     this.layerKey = process.env.REACT_APP_LAYER_SDK_KEY || "";
   }
 
-  validateKeys(): boolean {
-    // Your implementation here to validate the API keys
-    return true;
-  }
+  // verify the openAi key 
+  validateApiKey = async () => {
+    const res = await fetch("https://api.openai.com/v1/models", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this.openAIKey}`,
+      },
+    });
+    return res?.status === 401 ? false : true;
+  };
+
+  // call langchain streaming api and get the response  
+  chatBotResponse = async (searchItemData: string): Promise<any> => {
+    const res = await axios.get(
+      `http://localhost:5000?query=${searchItemData}`
+    );
+    return res;
+  };
 
   async generateText(prompt: string): Promise<string> {
+    // Sends a POST request to the OpenAI API to generate text based on the given prompt
+    // Returns the generated text
+    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${this.openAIKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "gpt-3.5-turbo",
+        messages: [
+          { role: "user", content: prompt },
+        ],
+      }),
+    });
 
-    if (this.cache.has(prompt)) {
-      return this.cache.get(prompt) || "";
-    } else {
-      const res = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${this.openAIKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "gpt-3.5-turbo",
-          messages: [
-            { role: "user", content: prompt },
-          ],
-        }),
-      });
-      
-      const data = await res.json();
-  
-      return data;
-    }
-
+    let data = await res.json();
+    data.prompt = prompt;
+    return data;
   }
 
   async generateTextList(prompts: string[]): Promise<string[]> {
-    
-    var responses: string[] = [];
-
-    for (const prompt of prompts) {
-      const response = await this.generateText(prompt);
-      responses.push(response);
-    }
-    
-    return responses;
+    const promises = <any>[];
+    prompts.forEach(url => {
+      const promise = this.generateText(url);
+      promises.push(promise);
+    });
+    return promises;
   }
 }

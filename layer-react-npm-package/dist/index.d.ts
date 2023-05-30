@@ -21,6 +21,7 @@ type ItemData = {
     prompt: string;
     payload: string;
     content: string;
+    id: string;
 };
 declare const AiAssistant: ({ title, itemList, color, image, showPopUp, showButton, placeholder, selectedTitle, receiveInsights, receiveQueryResponse, }: AiAssistantProps) => JSX.Element;
 
