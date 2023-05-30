@@ -13,7 +13,7 @@ import InvalidApiKeyError from "../InvalidApiKeyError";
 import { MyDataListEngine } from "../DataListEngine";
 import { useSpring, animated } from "@react-spring/web";
 import axios from 'axios';
-const  imageLayer =  require("../../assets/images/layerImg.png");
+// const  imageLayer =  require("../../assets/images/layerImg.png");
 
 export type AiAssistantProps = {
   title: string;
@@ -35,11 +35,13 @@ export type ItemData = {
   payload: string;
   content: string;
 };
+
 const errorView = {
   title: "401 Error",
   message:
     "This is likely a problem with your OpenAI API key. Check if your api key is still enabled.",
 };
+
 const AiAssistant = ({
   title,
   itemList,
@@ -81,6 +83,22 @@ const AiAssistant = ({
   const refBackButton = useRef<HTMLButtonElement>(null);
   const DEAFULT_HEIGHT = 200;
 
+
+  useEffect(() => {
+    var once = (function() {
+      var executed = false;
+      return function() {
+          getInsights(itemList.map((x) => x.payload), 0);
+          if (!executed) {
+              executed = true;
+          }
+      };
+    })();
+  
+    once();
+  }, [itemList]);
+
+
   // Create a useEffect hook that fills itemDataList wiht ItemData objects from the itemList
   useEffect(() => {
     const tempItemDataList: ItemData[] = [];
@@ -97,7 +115,31 @@ const AiAssistant = ({
     setUpdateItemData(!updateItemdata);
   }, [itemList, selectedTitle]);
 
-  // Create a useEffect hook that fills insightList wiht insightList coming from api response
+
+  // Create a useEffect hook that fills insightList with insightList coming from api response
+  useEffect(() => {
+    if (insightList.length && itemDataList.length) {
+      insightList.forEach((item: any, index: number) => {
+        if(Object.keys(itemDataList[item?.index])?.length){
+          itemDataList[item?.index].content = item?.choices[0]?.message?.content;
+        }
+      });
+      if (itemList.length === insightList.length) {
+        const convertInsightsJson = Object.assign(
+          {},
+          ...insightList.map((x: any) => ({
+            [x.id]: x.choices[0]?.message?.content,
+          }))
+        );
+        receiveInsights(convertInsightsJson);
+      }
+  
+      setItemDataList(itemDataList);
+      setUpdateItemData(!updateItemdata);
+    }
+  }, [insightList]);
+
+  // Create a useEffect hook that fills insightList with insightList coming from api response
   useEffect(() => {
     if (insightList.length && itemDataList.length) {
       insightList.forEach((item: any, index: number) => {
@@ -250,51 +292,61 @@ const AiAssistant = ({
     }
   };
 
+  // make a hook that makes sure getInsights is called only once
+  const [calledInsights, setCalledInsights] = useState(false);
+
   const getInsights = async (promptsData: string[], selectedIndex: number) => {
-    let response: any[];
-    response = await engine.generateTextList(promptsData);
-    let failedArrIndexes: number[] = [];
-    let filteredResponse: any[] = [];
+    
 
-    response.forEach((x: any, index) => {
-      if (x.error) {
-        failedArrIndexes.push(
-          failedRequestIndexes.length ? failedRequestIndexes[index] : index
-        );
-      }
-    });
+    if (!calledInsights) {
+      console.log("getInsights");
+      let response: any[];
+      response = await engine.generateTextList(promptsData);
 
-    setFailedRequestIndexes(failedArrIndexes);
-    if (response.filter((x) => !x.error).length) {
-      filteredResponse = response.map((x, i) => {
-        return {
-          ...x,
-          index: selectedTitleData ? selectedIndex : failedRequestIndexes[i] || i,
-        };
-      });
-    } else {
-      filteredResponse = response.map((x, i) => {
-        return { ...x, index: selectedTitleData ? selectedIndex : i };
-      });
-    }
-
-    setInsightList((prev: any) => [
-      ...prev,
-      ...filteredResponse.filter((x: any) => !x.error),
-    ]);
-    const newPromptsData = prompts.length ? prompts : promptsData;
-    let newPromtData: string[] = [];
-    filteredResponse.forEach((x, i) => {
-      if (x.error && x.error.message.includes("Rate limit reached")) {
-        if (newPromptsData[i]) {
-          newPromtData.push(newPromptsData[i]);
+      let failedArrIndexes: number[] = [];
+      let filteredResponse: any[] = [];
+        
+      response.forEach((x: any, index) => {
+        if (x.error) {
+          failedArrIndexes.push(
+            failedRequestIndexes.length ? failedRequestIndexes[index] : index
+          );
         }
+      });
+
+      setFailedRequestIndexes(failedArrIndexes);
+      if (response.filter((x) => !x.error).length) {
+        filteredResponse = response.map((x, i) => {
+          return {
+            ...x,
+            index: selectedTitleData ? selectedIndex : failedRequestIndexes[i] || i,
+          };
+        });
+      } else {
+        filteredResponse = response.map((x, i) => {
+          return { ...x, index: selectedTitleData ? selectedIndex : i };
+        });
       }
-    });
-    setPrompts(newPromtData);
-    setErrorPrompts(newPromtData);
-    if (newPromtData.length) {
-      setResendRequests(!resendRequests);
+
+      setInsightList((prev: any) => [
+        ...prev,
+        ...filteredResponse.filter((x: any) => !x.error),
+      ]);
+      const newPromptsData = prompts.length ? prompts : promptsData;
+      let newPromtData: string[] = [];
+      filteredResponse.forEach((x, i) => {
+        if (x.error && x.error.message.includes("Rate limit reached")) {
+          if (newPromptsData[i]) {
+            newPromtData.push(newPromptsData[i]);
+          }
+        }
+      });
+      setPrompts(newPromtData);
+      setErrorPrompts(newPromtData);
+      if (newPromtData.length) {
+        setResendRequests(!resendRequests);
+      }
+      setCalledInsights(true);
     }
   };
 
@@ -427,7 +479,7 @@ const AiAssistant = ({
                   ))
                 )}
               </div>
-              <div className="chat-field">
+              {/* <div className="chat-field">
                 <div className="searchBox">
                   <Input
                     placeholder="Enter Product SKU or name"
@@ -448,7 +500,7 @@ const AiAssistant = ({
                  <span><img src={imageLayer} width="40" /></span> 
                  Layer
                 </div>
-              </div>
+              </div> */}
             </>
           )}
         </animated.div>

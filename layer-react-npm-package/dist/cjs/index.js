@@ -3,8 +3,8 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var React = require('react');
-var axios = require('axios');
 var reactDom = require('react-dom');
+require('axios');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
@@ -28,7 +28,6 @@ function _interopNamespace(e) {
 
 var React__default = /*#__PURE__*/_interopDefaultLegacy(React);
 var React__namespace = /*#__PURE__*/_interopNamespace(React);
-var axios__default = /*#__PURE__*/_interopDefaultLegacy(axios);
 
 /******************************************************************************
 Copyright (c) Microsoft Corporation.
@@ -106,6 +105,16 @@ function __generator(thisArg, body) {
     }
 }
 
+function __spreadArray(to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+}
+
 function styleInject(css, ref) {
   if ( ref === void 0 ) ref = {};
   var insertAt = ref.insertAt;
@@ -133,24 +142,24 @@ function styleInject(css, ref) {
   }
 }
 
-var css_248z$6 = ".text-main-style {\n  display: block;\n  margin-block-start: 0em;\n  margin-block-end: 0em;\n  margin-inline-start: 0px;\n  margin-inline-end: 0px;\n  font-family: Helvetica, Arial, sans-serif;\n  line-height: 1.15;\n}";
-styleInject(css_248z$6);
+var css_248z$7 = ".text-main-style {\n  display: block;\n  margin-block-start: 0em;\n  margin-block-end: 0em;\n  margin-inline-start: 0px;\n  margin-inline-end: 0px;\n  font-family: Helvetica, Arial, sans-serif;\n  line-height: 1.15;\n}";
+styleInject(css_248z$7);
 
 var Text = function (_a) {
     var label = _a.label, className = _a.className, props = __rest(_a, ["label", "className"]);
     return (React__default["default"].createElement("p", __assign({ className: "text-main-style ".concat(className) }, props), label));
 };
 
-var css_248z$5 = ".button-component-main-style {\n  border: none;\n  outline: none;\n  padding: 0px;\n  cursor: pointer;\n}";
-styleInject(css_248z$5);
+var css_248z$6 = ".button-component-main-style {\n  border: none;\n  outline: none;\n  padding: 0px;\n  cursor: pointer;\n}";
+styleInject(css_248z$6);
 
 var Button = function (_a) {
     var child = _a.child, _b = _a.className, className = _b === void 0 ? "" : _b, props = __rest(_a, ["child", "className"]);
     return (React__default["default"].createElement("button", __assign({ className: "button-component-main-style ".concat(className) }, props), child));
 };
 
-var css_248z$4 = ".ai-assistant-list-item-main-container {\n  margin-bottom: 12px;\n}\n.ai-assistant-list-item-main-container .container {\n  display: flex;\n  align-items: center;\n  padding: 16px;\n}\n.ai-assistant-list-item-main-container .text-container {\n  display: flex;\n  flex: 1 1;\n  flex-direction: column;\n  align-items: flex-start;\n}\n.ai-assistant-list-item-main-container .title-text-style {\n  font-weight: 700;\n  font-size: 16px;\n  color: #232427;\n  margin-bottom: 8px;\n}\n.ai-assistant-list-item-main-container .subtitle-text-style {\n  font-weight: 400;\n  font-size: 16px;\n  color: #232427;\n}";
-styleInject(css_248z$4);
+var css_248z$5 = ".ai-assistant-list-item-main-container {\n  margin-bottom: 12px;\n}\n.ai-assistant-list-item-main-container .container {\n  display: flex;\n  align-items: center;\n  padding: 16px;\n}\n.ai-assistant-list-item-main-container .text-container {\n  display: flex;\n  flex: 1 1;\n  flex-direction: column;\n  align-items: flex-start;\n}\n.ai-assistant-list-item-main-container .title-text-style {\n  font-weight: 700;\n  font-size: 16px;\n  color: #232427;\n  margin-bottom: 8px;\n}\n.ai-assistant-list-item-main-container .subtitle-text-style {\n  font-weight: 400;\n  font-size: 16px;\n  color: #232427;\n}";
+styleInject(css_248z$5);
 
 var ArrowForwardIcon = function (_a) {
     var _b = _a.color, color = _b === void 0 ? '#000000' : _b, props = __rest(_a, ["color"]);
@@ -167,19 +176,19 @@ var ListItem = function (_a) {
             React__default["default"].createElement(ArrowForwardIcon, { color: color })) }));
 };
 
-var css_248z$3 = ".title-text-style {\n  font-weight: 700;\n  font-size: 16px;\n  color: #232427;\n  margin-bottom: 8px;\n}\n\n.subtitle-text-style {\n  font-weight: 400;\n  font-size: 16px;\n  color: #232427;\n}\n\n.detail-text-style {\n  font-weight: 400;\n  font-size: 14px;\n  color: #232427;\n}";
+var css_248z$4 = ".title-text-style {\n  font-weight: 700;\n  font-size: 16px;\n  color: #232427;\n  margin-bottom: 8px;\n}\n\n.subtitle-text-style {\n  font-weight: 400;\n  font-size: 16px;\n  color: #232427;\n}\n\n.detail-text-style {\n  font-weight: 400;\n  font-size: 14px;\n  color: #232427;\n}";
+styleInject(css_248z$4);
+
+var css_248z$3 = ".ai-assistant-item-details-main-container {\n  background-color: #f3f1ff;\n  margin-bottom: 12px;\n  overflow: scroll;\n  overflow-x: hidden;\n  animation: animateOpen 0.5s;\n  transform-origin: top;\n  animation-timing-function: ease-in;\n  -ms-overflow-style: none; /* IE and Edge */\n  scrollbar-width: none; /* Firefox */\n}\n@keyframes animateOpen {\n  from {\n    transform: scaleY(0);\n  }\n  to {\n    transform: scaleY(1);\n  }\n}\n.ai-assistant-item-details-main-container::-webkit-scrollbar {\n  display: none; /* Hide scrollbar for Chrome, Safari and Opera */\n}\n\n.ai-assistant-item-details-main-container-end-animation {\n  background-color: #f3f1ff;\n  margin-bottom: 12px;\n  overflow: scroll;\n  overflow-x: hidden;\n  animation: animateClose 0.5s;\n  transform-origin: top;\n  animation-timing-function: ease;\n  -ms-overflow-style: none; /* IE and Edge */\n  scrollbar-width: none; /* Firefox */\n}\n@keyframes animateClose {\n  from {\n    transform: scaleY(1);\n  }\n  to {\n    transform: scaleY(0);\n  }\n}\n.ai-assistant-item-details-main-container-end-animation::-webkit-scrollbar {\n  display: none; /* Hide scrollbar for Chrome, Safari and Opera */\n}\n\n.ai-assistant-item-details-container {\n  display: flex;\n  flex-direction: column;\n  padding: 16px;\n}\n\n.ai-assistant-item-details-heading-text-container {\n  display: flex;\n  flex: 1;\n  flex-direction: column;\n  border-bottom: 1px solid #7b6cf3;\n  padding-bottom: 16px;\n  margin-bottom: 16px;\n}";
 styleInject(css_248z$3);
 
-var css_248z$2 = ".ai-assistant-item-details-main-container {\n  background-color: #f3f1ff;\n  margin-bottom: 12px;\n  overflow: scroll;\n  overflow-x: hidden;\n  animation: animateOpen 0.5s;\n  transform-origin: top;\n  animation-timing-function: ease-in;\n  -ms-overflow-style: none; /* IE and Edge */\n  scrollbar-width: none; /* Firefox */\n}\n@keyframes animateOpen {\n  from {\n    transform: scaleY(0);\n  }\n  to {\n    transform: scaleY(1);\n  }\n}\n.ai-assistant-item-details-main-container::-webkit-scrollbar {\n  display: none; /* Hide scrollbar for Chrome, Safari and Opera */\n}\n\n.ai-assistant-item-details-main-container-end-animation {\n  background-color: #f3f1ff;\n  margin-bottom: 12px;\n  overflow: scroll;\n  overflow-x: hidden;\n  animation: animateClose 0.5s;\n  transform-origin: top;\n  animation-timing-function: ease;\n  -ms-overflow-style: none; /* IE and Edge */\n  scrollbar-width: none; /* Firefox */\n}\n@keyframes animateClose {\n  from {\n    transform: scaleY(1);\n  }\n  to {\n    transform: scaleY(0);\n  }\n}\n.ai-assistant-item-details-main-container-end-animation::-webkit-scrollbar {\n  display: none; /* Hide scrollbar for Chrome, Safari and Opera */\n}\n\n.ai-assistant-item-details-container {\n  display: flex;\n  flex-direction: column;\n  padding: 16px;\n}\n\n.ai-assistant-item-details-heading-text-container {\n  display: flex;\n  flex: 1;\n  flex-direction: column;\n  border-bottom: 1px solid #7b6cf3;\n  padding-bottom: 16px;\n  margin-bottom: 16px;\n}";
-styleInject(css_248z$2);
-
 var ItemDetail = React.forwardRef(function (_a, ref) {
-    var color = _a.color; _a.id; var itemData = _a.itemData;
+    var color = _a.color; _a.id; var itemData = _a.itemData, onSetHeight = _a.onSetHeight, placeholder = _a.placeholder, updateItemData = _a.updateItemData;
     var refForDiv = React.useRef(null);
     var _b = React.useState({
         title: itemData.title,
         subtitle: itemData.subtitle,
-        content: "generating text...",
+        content: itemData.content || placeholder,
     }), item = _b[0], setItem = _b[1];
     React.useImperativeHandle(ref, function () { return ({
         log: function () {
@@ -189,47 +198,31 @@ var ItemDetail = React.forwardRef(function (_a, ref) {
             }
         },
     }); });
-    // create a useEffect hook that calls generateText() when the component mounts
     React.useEffect(function () {
-        generateText();
-    }, []);
-    // call openai streaming api and update item content with the response
-    var generateText = function () { return __awaiter(void 0, void 0, void 0, function () {
-        var res, data;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, fetch("https://api.openai.com/v1/chat/completions", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: "Bearer ".concat(process.env.REACT_APP_OPEN_AI_API_KEY),
-                        },
-                        body: JSON.stringify({
-                            "model": "gpt-3.5-turbo",
-                            "messages": [{ "role": "user", "content": itemData.prompt + itemData.payload }]
-                        }),
-                    })];
-                case 1:
-                    res = _a.sent();
-                    return [4 /*yield*/, res.json()];
-                case 2:
-                    data = _a.sent();
-                    console.log("Data: ", data);
-                    setItem({
-                        title: itemData.title,
-                        subtitle: itemData.subtitle,
-                        content: data.choices[0].message.content,
-                    });
-                    return [2 /*return*/];
+        setItem(__assign(__assign({}, itemData), { content: itemData.content || placeholder }));
+        if ((itemData === null || itemData === void 0 ? void 0 : itemData.content) && (itemData === null || itemData === void 0 ? void 0 : itemData.content.length) > 18) {
+            if ((itemData === null || itemData === void 0 ? void 0 : itemData.content.length) > 550) {
+                onSetHeight(400);
             }
-        });
-    }); };
+            else if ((itemData === null || itemData === void 0 ? void 0 : itemData.content.length) > 300 &&
+                (itemData === null || itemData === void 0 ? void 0 : itemData.content.length) < 550) {
+                onSetHeight(320);
+            }
+            else if ((itemData === null || itemData === void 0 ? void 0 : itemData.content.length) > 150 &&
+                (itemData === null || itemData === void 0 ? void 0 : itemData.content.length) < 300) {
+                onSetHeight(270);
+            }
+            else {
+                onSetHeight(200);
+            }
+        }
+    }, [updateItemData]);
     return (React__default["default"].createElement("div", { ref: refForDiv, style: { backgroundColor: "".concat(color, "18") }, className: "ai-assistant-item-details-main-container" },
         React__default["default"].createElement("div", { className: "ai-assistant-item-details-container" },
             React__default["default"].createElement("div", { style: { borderBottomColor: color }, className: "ai-assistant-item-details-heading-text-container " },
                 React__default["default"].createElement(Text, { className: "title-text-style", label: itemData.title }),
                 React__default["default"].createElement(Text, { className: "subtitle-text-style", label: itemData.subtitle })),
-            React__default["default"].createElement(Text, { className: "detail-text-style", label: item.content }))));
+            React__default["default"].createElement(Text, { className: "detail-text-style", label: item.content || 'getting insight...' }))));
 });
 
 var CrossIcon = function (_a) {
@@ -244,11 +237,11 @@ var ArrowRightIcon = function (_a) {
         React__default["default"].createElement("path", { d: "M10.9997 21.6667L0.333008 11L10.9997 0.333328L12.8997 2.19999L5.43301 9.66666H21.6663V12.3333H5.43301L12.8997 19.8L10.9997 21.6667Z", fill: color === "#000000" ? "#000000" : color })));
 };
 
-var css_248z$1 = ".ai-assistant-main-container {\n  position: fixed;\n  bottom: 35px;\n  right: 30px;\n}\n.ai-assistant-main-container .main-popup-button {\n  height: 80px;\n  width: 80px;\n  border-radius: 360px;\n  outline: none;\n  border: none;\n  box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.25);\n}\n.ai-assistant-main-container .main-popup-container, .ai-assistant-main-container .main-popup-container-animate-end, .ai-assistant-main-container .main-popup-container-animate-start {\n  position: absolute;\n  bottom: 95px;\n  width: 436px;\n  right: 0px;\n  box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.2);\n  border-radius: 4px;\n  padding: 24px;\n  display: flex;\n  flex-direction: column;\n  background-color: white;\n  overflow: hidden;\n}\n.ai-assistant-main-container .main-popup-container-animate-start {\n  height: auto;\n  max-height: 400px;\n}\n.ai-assistant-main-container .main-popup-container-animate-end {\n  height: 0px;\n  padding-top: 0px;\n  padding-bottom: 0px;\n}\n.ai-assistant-main-container .popup-header-container {\n  display: flex;\n  border-bottom: 4px solid;\n  justify-content: flex-start;\n  align-items: center;\n  padding-bottom: 14px;\n}\n.ai-assistant-main-container .popup-header-container .header-back-button-style {\n  outline: none;\n  border: none;\n  background-color: transparent;\n  cursor: pointer;\n  height: 32px;\n  width: 32px;\n  margin-right: 16px;\n  overflow: hidden;\n}\n.ai-assistant-main-container .popup-header-container .header-text-container {\n  min-height: 32px;\n}\n.ai-assistant-main-container .popup-header-container .header-text-container .header-text-style {\n  font-weight: 700;\n  font-size: 24px;\n  color: #232427;\n}\n.ai-assistant-main-container .ai-assistant-main-popup-header-back-button-style-end {\n  outline: none;\n  border: none;\n  background-color: transparent;\n  cursor: pointer;\n  height: 32px;\n  width: 32px;\n  margin-right: 16px;\n  overflow: hidden;\n}\n.ai-assistant-main-container .main-item-list-container {\n  max-height: calc(100vh - 260px);\n  overflow-y: scroll;\n  overflow-x: hidden;\n  display: flex;\n  flex-direction: column;\n  padding-top: 12px;\n  transition: transform 8s ease-out;\n  transform: scaleY(1);\n  -ms-overflow-style: none; /* IE and Edge */\n  scrollbar-width: none; /* Firefox */\n}\n.ai-assistant-main-container .main-item-list-container::-webkit-scrollbar {\n  display: none; /* Hide scrollbar for Chrome, Safari and Opera */\n}";
-styleInject(css_248z$1);
+var css_248z$2 = ".ai-assistant-main-container {\n  position: fixed;\n  bottom: 35px;\n  right: 30px;\n}\n.ai-assistant-main-container .main-popup-button {\n  height: 80px;\n  width: 80px;\n  border-radius: 360px;\n  outline: none;\n  border: none;\n  box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.25);\n}\n.ai-assistant-main-container .main-popup-container, .ai-assistant-main-container .main-popup-container-animate-end, .ai-assistant-main-container .main-popup-container-animate-start {\n  position: absolute;\n  bottom: 95px;\n  width: 436px;\n  right: 0px;\n  box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.2);\n  border-radius: 4px;\n  padding: 24px;\n  display: flex;\n  flex-direction: column;\n  background-color: white;\n  overflow: hidden;\n}\n.ai-assistant-main-container .main-popup-container-animate-start {\n  height: auto;\n  max-height: 400px;\n}\n.ai-assistant-main-container .main-popup-container-animate-end {\n  height: 0px;\n  padding-top: 0px;\n  padding-bottom: 0px;\n}\n.ai-assistant-main-container .popup-header-container {\n  display: flex;\n  border-bottom: 4px solid;\n  justify-content: flex-start;\n  align-items: center;\n  padding-bottom: 14px;\n}\n.ai-assistant-main-container .popup-header-container .header-back-button-style {\n  outline: none;\n  border: none;\n  background-color: transparent;\n  cursor: pointer;\n  height: 32px;\n  width: 32px;\n  margin-right: 16px;\n  overflow: hidden;\n}\n.ai-assistant-main-container .popup-header-container .header-text-container {\n  min-height: 32px;\n}\n.ai-assistant-main-container .popup-header-container .header-text-container .header-text-style {\n  font-weight: 700;\n  font-size: 24px;\n  color: #232427;\n}\n.ai-assistant-main-container .ai-assistant-main-popup-header-back-button-style-end {\n  outline: none;\n  border: none;\n  background-color: transparent;\n  cursor: pointer;\n  height: 32px;\n  width: 32px;\n  margin-right: 16px;\n  overflow: hidden;\n}\n.ai-assistant-main-container .main-item-list-container {\n  max-height: calc(100vh - 260px);\n  overflow-y: scroll;\n  overflow-x: hidden;\n  display: flex;\n  flex-direction: column;\n  padding-top: 12px;\n  transition: transform 8s ease-out;\n  transform: scaleY(1);\n  -ms-overflow-style: none; /* IE and Edge */\n  scrollbar-width: none; /* Firefox */\n}\n.ai-assistant-main-container .main-item-list-container::-webkit-scrollbar {\n  display: none; /* Hide scrollbar for Chrome, Safari and Opera */\n}\n.ai-assistant-main-container .searchBox {\n  display: flex;\n  width: 90%;\n  margin: 0 auto;\n  margin-top: 10px;\n}\n.ai-assistant-main-container .sendBtn {\n  margin-right: 10px;\n  padding: 8px;\n  border-radius: 50%;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  background-color: #7a6bf2;\n  color: #fff;\n}\n.ai-assistant-main-container .chat-field {\n  box-shadow: 0 -5px 5px -5px #333;\n  background: #fff;\n  margin-right: -30px;\n  margin-left: -30px;\n}\n.ai-assistant-main-container .powered-by {\n  text-align: right;\n  padding: 25px 15px 0px 15px;\n  font-size: 13px;\n}\n.ai-assistant-main-container .powered-by img {\n  width: 20px;\n  vertical-align: bottom;\n  margin: 0 5px;\n}\n@media (max-width: 530px) {\n  .ai-assistant-main-container .main-popup-container-animate-start {\n    width: 272px;\n    padding: 16px;\n    bottom: 58px;\n  }\n  .ai-assistant-main-container .main-popup-container-animate-end {\n    width: 272px;\n    padding: 16px;\n    bottom: 58px;\n  }\n  .ai-assistant-main-container .title-text-style, .ai-assistant-main-container .subtitle-text-style {\n    font-size: 14px;\n  }\n  .ai-assistant-main-container .main-popup-button {\n    height: 50px;\n    width: 50px;\n  }\n  .ai-assistant-main-container .main-popup-button svg {\n    width: 20px;\n    height: 20px;\n  }\n  .ai-assistant-main-container .environment-error-main-container-style .text-style {\n    font-size: 16px;\n  }\n  .ai-assistant-main-container .powered-by {\n    padding: 25px 25px 0px 15px;\n  }\n}";
+styleInject(css_248z$2);
 
-var css_248z = ".environment-error-main-container-style {\n  position: absolute;\n  inset: 0px 0px 0px 0px;\n  background: rgba(0, 0, 0, 0.86);\n  padding: 24px;\n}\n.environment-error-main-container-style .top-container {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  padding-bottom: 20px;\n}\n.environment-error-main-container-style .heading-text-style {\n  font-weight: 700;\n  font-size: 26px;\n}\n.environment-error-main-container-style .bottom-container {\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  background-color: #1e1e1e;\n  padding: 16px;\n}\n.environment-error-main-container-style .text-style {\n  font-weight: 400;\n  font-size: 16px;\n  color: #969696;\n}";
-styleInject(css_248z);
+var css_248z$1 = ".environment-error-main-container-style {\n  position: absolute;\n  inset: 0px 0px 0px 0px;\n  background: rgba(0, 0, 0, 0.86);\n  padding: 24px;\n}\n.environment-error-main-container-style .top-container {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  padding-bottom: 20px;\n}\n.environment-error-main-container-style .heading-text-style {\n  font-weight: 700;\n  font-size: 26px;\n}\n.environment-error-main-container-style .bottom-container {\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  background-color: #1e1e1e;\n  padding: 16px;\n}\n.environment-error-main-container-style .text-style {\n  font-weight: 400;\n  font-size: 16px;\n  color: #969696;\n}";
+styleInject(css_248z$1);
 
 var EnvironmentError = function (_a) {
     _a.color;
@@ -265,8 +258,21 @@ var EnvironmentError = function (_a) {
             React__default["default"].createElement(Text, { className: "text-style", label: "Please add these keys to your process file to correct the error" }))));
 };
 
+var css_248z = ".environment-error-main-container-style {\n  position: absolute;\n  inset: 0px 0px 0px 0px;\n  background: rgba(0, 0, 0, 0.86);\n  padding: 24px;\n}\n.environment-error-main-container-style .top-container {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  padding-bottom: 20px;\n}\n.environment-error-main-container-style .heading-text-style {\n  font-weight: 700;\n  font-size: 26px;\n  color: #fff;\n}\n.environment-error-main-container-style .bottom-container {\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  background-color: #1e1e1e;\n  padding: 16px;\n}\n.environment-error-main-container-style .text-style {\n  font-weight: 400;\n  font-size: 20px;\n  color: #fff;\n  line-height: 1.7;\n  text-align: center;\n}\n.environment-error-main-container-style .bottom-container-center {\n  height: 50%;\n  width: 78%;\n  margin: 0 auto;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}";
+styleInject(css_248z);
+
+var InvalidApiKeyError = function (_a) {
+    _a.color; var errorView = _a.errorView;
+    return (React__default["default"].createElement("div", { className: "environment-error-main-container-style" },
+        React__default["default"].createElement("div", { className: "top-container" },
+            React__default["default"].createElement(Text, { className: "heading-text-style", label: "".concat(errorView === null || errorView === void 0 ? void 0 : errorView.title) })),
+        React__default["default"].createElement("div", { className: "bottom-container-center" },
+            React__default["default"].createElement(Text, { className: "text-style", label: "".concat(errorView === null || errorView === void 0 ? void 0 : errorView.message) }))));
+};
+
 var MyDataListEngine = /** @class */ (function () {
     function MyDataListEngine() {
+        this.cache = new Map();
         this.openAIKey = process.env.REACT_APP_OPEN_AI_API_KEY || "";
         this.layerKey = process.env.REACT_APP_LAYER_SDK_KEY || "";
     }
@@ -276,42 +282,56 @@ var MyDataListEngine = /** @class */ (function () {
     };
     MyDataListEngine.prototype.generateText = function (prompt) {
         return __awaiter(this, void 0, void 0, function () {
-            var response;
+            var res, data;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        console.log("Prompt:", prompt);
-                        return [4 /*yield*/, axios__default["default"].post("https://api.openai.com/v1/engines/davinci/completions", {
-                                prompt: prompt,
-                                max_tokens: 100,
-                                temperature: 0.7,
-                                top_p: 1,
-                                frequency_penalty: 0,
-                                presence_penalty: 0,
-                                stop: ["\n", "  ", "  "],
-                            }, {
-                                headers: {
-                                    Authorization: "Bearer ".concat(this.openAIKey),
-                                    "Content-Type": "application/json",
-                                },
-                            })];
-                    case 1:
-                        response = _a.sent();
-                        return [2 /*return*/, response.data.choices[0].text.trim()];
+                        if (!this.cache.has(prompt)) return [3 /*break*/, 1];
+                        return [2 /*return*/, this.cache.get(prompt) || ""];
+                    case 1: return [4 /*yield*/, fetch("https://api.openai.com/v1/chat/completions", {
+                            method: "POST",
+                            headers: {
+                                Authorization: "Bearer ".concat(this.openAIKey),
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                                model: "gpt-3.5-turbo",
+                                messages: [
+                                    { role: "user", content: prompt },
+                                ],
+                            }),
+                        })];
+                    case 2:
+                        res = _a.sent();
+                        return [4 /*yield*/, res.json()];
+                    case 3:
+                        data = _a.sent();
+                        return [2 /*return*/, data];
                 }
             });
         });
     };
     MyDataListEngine.prototype.generateTextList = function (prompts) {
         return __awaiter(this, void 0, void 0, function () {
-            var responses;
-            var _this = this;
+            var responses, _i, prompts_1, prompt_1, response;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, Promise.all(prompts.map(function (prompt) { return _this.generateText(prompt); }))];
+                    case 0:
+                        responses = [];
+                        _i = 0, prompts_1 = prompts;
+                        _a.label = 1;
                     case 1:
-                        responses = _a.sent();
-                        return [2 /*return*/, responses];
+                        if (!(_i < prompts_1.length)) return [3 /*break*/, 4];
+                        prompt_1 = prompts_1[_i];
+                        return [4 /*yield*/, this.generateText(prompt_1)];
+                    case 2:
+                        response = _a.sent();
+                        responses.push(response);
+                        _a.label = 3;
+                    case 3:
+                        _i++;
+                        return [3 /*break*/, 1];
+                    case 4: return [2 /*return*/, responses];
                 }
             });
         });
@@ -329,20 +349,45 @@ function I$1(t,...e){return l$1.fun(t)?t(...e):t}var te=(t,e)=>t===!0||!!(e&&t&&
 
 var k=/^--/;function I(t,e){return e==null||typeof e=="boolean"||e===""?"":typeof e=="number"&&e!==0&&!k.test(t)&&!(c.hasOwnProperty(t)&&c[t])?e+"px":(""+e).trim()}var v={};function V(t,e){if(!t.nodeType||!t.setAttribute)return !1;let r=t.nodeName==="filter"||t.parentNode&&t.parentNode.nodeName==="filter",{style:i,children:s,scrollTop:u,scrollLeft:l,viewBox:a,...n}=e,d=Object.values(n),m=Object.keys(n).map(o=>r||t.hasAttribute(o)?o:v[o]||(v[o]=o.replace(/([A-Z])/g,p=>"-"+p.toLowerCase())));s!==void 0&&(t.textContent=s);for(let o in i)if(i.hasOwnProperty(o)){let p=I(o,i[o]);k.test(o)?t.style.setProperty(o,p):t.style[o]=p;}m.forEach((o,p)=>{t.setAttribute(o,d[p]);}),u!==void 0&&(t.scrollTop=u),l!==void 0&&(t.scrollLeft=l),a!==void 0&&t.setAttribute("viewBox",a);}var c={animationIterationCount:!0,borderImageOutset:!0,borderImageSlice:!0,borderImageWidth:!0,boxFlex:!0,boxFlexGroup:!0,boxOrdinalGroup:!0,columnCount:!0,columns:!0,flex:!0,flexGrow:!0,flexPositive:!0,flexShrink:!0,flexNegative:!0,flexOrder:!0,gridRow:!0,gridRowEnd:!0,gridRowSpan:!0,gridRowStart:!0,gridColumn:!0,gridColumnEnd:!0,gridColumnSpan:!0,gridColumnStart:!0,fontWeight:!0,lineClamp:!0,lineHeight:!0,opacity:!0,order:!0,orphans:!0,tabSize:!0,widows:!0,zIndex:!0,zoom:!0,fillOpacity:!0,floodOpacity:!0,stopOpacity:!0,strokeDasharray:!0,strokeDashoffset:!0,strokeMiterlimit:!0,strokeOpacity:!0,strokeWidth:!0},F=(t,e)=>t+e.charAt(0).toUpperCase()+e.substring(1),L=["Webkit","Ms","Moz","O"];c=Object.keys(c).reduce((t,e)=>(L.forEach(r=>t[F(r,e)]=t[e]),t),c);var _=/^(matrix|translate|scale|rotate|skew)/,$=/^(translate)/,G=/^(rotate|skew)/,y=(t,e)=>l$1.num(t)&&t!==0?t+e:t,h=(t,e)=>l$1.arr(t)?t.every(r=>h(r,e)):l$1.num(t)?t===e:parseFloat(t)===e,g=class extends u{constructor({x:e,y:r,z:i,...s}){let u=[],l=[];(e||r||i)&&(u.push([e||0,r||0,i||0]),l.push(a=>[`translate3d(${a.map(n=>y(n,"px")).join(",")})`,h(a,0)])),xt(s,(a,n)=>{if(n==="transform")u.push([a||""]),l.push(d=>[d,d===""]);else if(_.test(n)){if(delete s[n],l$1.und(a))return;let d=$.test(n)?"px":G.test(n)?"deg":"";u.push(ht$1(a)),l.push(n==="rotate3d"?([m,o,p,O])=>[`rotate3d(${m},${o},${p},${y(O,d)})`,h(O,0)]:m=>[`${n}(${m.map(o=>y(o,d)).join(",")})`,h(m,n.startsWith("scale")?1:0)]);}}),u.length&&(s.transform=new x(u,l)),super(s);}},x=class extends ge{constructor(r,i){super();this.inputs=r;this.transforms=i;}_value=null;get(){return this._value||(this._value=this._get())}_get(){let r="",i=!0;return Ve(this.inputs,(s,u)=>{let l=ve(s[0]),[a,n]=this.transforms[u](l$1.arr(l)?l:s.map(ve));r+=" "+a,i=i&&n;}),i?"none":r}observerAdded(r){r==1&&Ve(this.inputs,i=>Ve(i,s=>Pt(s)&&Gt(s,this)));}observerRemoved(r){r==0&&Ve(this.inputs,i=>Ve(i,s=>Pt(s)&&Qt(s,this)));}eventObserved(r){r.type=="change"&&(this._value=null),$t(this,r);}};var C=["a","abbr","address","area","article","aside","audio","b","base","bdi","bdo","big","blockquote","body","br","button","canvas","caption","cite","code","col","colgroup","data","datalist","dd","del","details","dfn","dialog","div","dl","dt","em","embed","fieldset","figcaption","figure","footer","form","h1","h2","h3","h4","h5","h6","head","header","hgroup","hr","html","i","iframe","img","input","ins","kbd","keygen","label","legend","li","link","main","map","mark","menu","menuitem","meta","meter","nav","noscript","object","ol","optgroup","option","output","p","param","picture","pre","progress","q","rp","rt","ruby","s","samp","script","section","select","small","source","span","strong","style","sub","summary","sup","table","tbody","td","textarea","tfoot","th","thead","time","title","tr","track","u","ul","var","video","wbr","circle","clipPath","defs","ellipse","foreignObject","g","image","line","linearGradient","mask","path","pattern","polygon","polyline","radialGradient","rect","stop","svg","text","tspan"];p.assign({batchedUpdates:reactDom.unstable_batchedUpdates,createStringInterpolator:Xt,colors:It});var q=Ke(C,{applyAnimatedValues:V,createAnimatedStyle:t=>new g(t),getComponentProps:({scrollTop:t,scrollLeft:e,...r})=>r}),it=q.animated;
 
+var errorView = {
+    title: "401 Error",
+    message: "This is likely a problem with your OpenAI API key. Check if your api key is still enabled.",
+};
 var AiAssistant = function (_a) {
-    var itemList = _a.itemList, color = _a.color, image = _a.image;
+    var title = _a.title, itemList = _a.itemList, color = _a.color, image = _a.image, showPopUp = _a.showPopUp, showButton = _a.showButton, placeholder = _a.placeholder, selectedTitle = _a.selectedTitle, receiveInsights = _a.receiveInsights; _a.receiveQueryResponse;
     var engine = new MyDataListEngine();
     if (!engine.validateKeys()) {
         return React__default["default"].createElement(EnvironmentError, { color: "#FF0000" });
     }
-    var _b = React.useState(false), showPopUp = _b[0], setShowPopUp = _b[1];
-    var _c = React.useState(false), showDetails = _c[0], setShowDetails = _c[1];
-    var _d = React.useState(false), showEnvError = _d[0]; _d[1];
-    var _e = React.useState([]), itemDataList = _e[0], setItemDataList = _e[1];
-    var _f = React.useState(0), selectedItem = _f[0], setSelectedItem = _f[1];
+    var _b = React.useState(selectedTitle), selectedTitleData = _b[0], setSelectedTitleData = _b[1];
+    var _c = React.useState(""); _c[0]; _c[1];
+    var _d = React.useState(false), showWidget = _d[0], setShowWidget = _d[1];
+    var _e = React.useState(false), showDetails = _e[0], setShowDetails = _e[1];
+    var _f = React.useState(false), showEnvError = _f[0]; _f[1];
+    var _g = React.useState(false), showStatusError = _g[0], setShowStatusError = _g[1];
+    var _h = React.useState(false), updateItemdata = _h[0], setUpdateItemData = _h[1];
+    var _j = React.useState([]), itemDataList = _j[0], setItemDataList = _j[1];
+    var _k = React.useState(0), selectedItem = _k[0], setSelectedItem = _k[1];
+    var _l = React.useState(false), showDiv = _l[0], setShowDiv = _l[1];
+    var _m = React.useState(false), showArrowButton = _m[0], setShowArrowButton = _m[1];
+    var _o = React.useState(0), divHeight = _o[0], setDivHeight = _o[1];
+    var _p = React.useState([]), insightList = _p[0], setInsightList = _p[1];
+    var _q = React.useState([]), failedRequestIndexes = _q[0], setFailedRequestIndexes = _q[1];
+    var _r = React.useState([]), errorPrompts = _r[0], setErrorPrompts = _r[1];
+    var _s = React.useState(false), resendRequests = _s[0], setResendRequests = _s[1];
+    var _t = React.useState([]), prompts = _t[0], setPrompts = _t[1];
     var ref = React.useRef();
     var refPopUp = React.useRef(null);
     var refBackButton = React.useRef(null);
+    var DEAFULT_HEIGHT = 200;
+    React.useEffect(function () {
+        var once = (function () {
+            return function () {
+                getInsights(itemList.map(function (x) { return x.payload; }), 0);
+            };
+        })();
+        once();
+    }, [itemList]);
     // Create a useEffect hook that fills itemDataList wiht ItemData objects from the itemList
     React.useEffect(function () {
         var tempItemDataList = [];
@@ -352,83 +397,319 @@ var AiAssistant = function (_a) {
                 subtitle: item.subtitle,
                 prompt: item.prompt,
                 payload: item.payload,
+                content: "",
             });
         });
         setItemDataList(tempItemDataList);
-    }, [itemList]);
+        setUpdateItemData(!updateItemdata);
+    }, [itemList, selectedTitle]);
+    // Create a useEffect hook that fills insightList with insightList coming from api response
+    React.useEffect(function () {
+        if (insightList.length && itemDataList.length) {
+            insightList.forEach(function (item, index) {
+                var _a, _b, _c;
+                if ((_a = Object.keys(itemDataList[item === null || item === void 0 ? void 0 : item.index])) === null || _a === void 0 ? void 0 : _a.length) {
+                    itemDataList[item === null || item === void 0 ? void 0 : item.index].content = (_c = (_b = item === null || item === void 0 ? void 0 : item.choices[0]) === null || _b === void 0 ? void 0 : _b.message) === null || _c === void 0 ? void 0 : _c.content;
+                }
+            });
+            if (itemList.length === insightList.length) {
+                var convertInsightsJson = Object.assign.apply(Object, __spreadArray([{}], insightList.map(function (x) {
+                    var _a;
+                    var _b, _c;
+                    return (_a = {},
+                        _a[x.id] = (_c = (_b = x.choices[0]) === null || _b === void 0 ? void 0 : _b.message) === null || _c === void 0 ? void 0 : _c.content,
+                        _a);
+                }), false));
+                receiveInsights(convertInsightsJson);
+            }
+            setItemDataList(itemDataList);
+            setUpdateItemData(!updateItemdata);
+        }
+    }, [insightList]);
+    // Create a useEffect hook that fills insightList with insightList coming from api response
+    React.useEffect(function () {
+        if (insightList.length && itemDataList.length) {
+            insightList.forEach(function (item, index) {
+                var _a, _b, _c;
+                if ((_a = Object.keys(itemDataList[item === null || item === void 0 ? void 0 : item.index])) === null || _a === void 0 ? void 0 : _a.length) {
+                    itemDataList[item === null || item === void 0 ? void 0 : item.index].content = (_c = (_b = item === null || item === void 0 ? void 0 : item.choices[0]) === null || _b === void 0 ? void 0 : _b.message) === null || _c === void 0 ? void 0 : _c.content;
+                }
+            });
+            if (itemList.length === insightList.length) {
+                var convertInsightsJson = Object.assign.apply(Object, __spreadArray([{}], insightList.map(function (x) {
+                    var _a;
+                    var _b, _c;
+                    return (_a = {},
+                        _a[x.id] = (_c = (_b = x.choices[0]) === null || _b === void 0 ? void 0 : _b.message) === null || _c === void 0 ? void 0 : _c.content,
+                        _a);
+                }), false));
+                receiveInsights(convertInsightsJson);
+            }
+            setItemDataList(itemDataList);
+            setUpdateItemData(!updateItemdata);
+        }
+    }, [insightList]);
+    React.useEffect(function () {
+        onClickPopupButton();
+    }, [showWidget]);
+    React.useEffect(function () {
+        setShowWidget(showPopUp || false);
+    }, [showPopUp]);
+    React.useEffect(function () {
+        if ((errorPrompts === null || errorPrompts === void 0 ? void 0 : errorPrompts.length) && showWidget) {
+            setTimeout(function () { return __awaiter(void 0, void 0, void 0, function () {
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0: return [4 /*yield*/, getInsights(errorPrompts, selectedItem)];
+                        case 1:
+                            _a.sent();
+                            return [2 /*return*/];
+                    }
+                });
+            }); }, 7000);
+        }
+    }, [resendRequests]);
+    React.useEffect(function () {
+        setSelectedTitleData(selectedTitle);
+        if (selectedTitle) {
+            setInsightList([]);
+            var index_1 = itemList.findIndex(function (x) { return x.subtitle === selectedTitle; });
+            if (showWidget) {
+                (function () { return __awaiter(void 0, void 0, void 0, function () {
+                    var questionPrompts;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0: return [4 /*yield*/, validateApiKey()];
+                            case 1:
+                                if (!_a.sent()) return [3 /*break*/, 3];
+                                questionPrompts = [];
+                                questionPrompts.push(selectedTitle);
+                                return [4 /*yield*/, getInsights(questionPrompts, index_1)];
+                            case 2:
+                                _a.sent();
+                                return [3 /*break*/, 4];
+                            case 3:
+                                setShowStatusError(true);
+                                _a.label = 4;
+                            case 4: return [2 /*return*/];
+                        }
+                    });
+                }); })();
+            }
+            else {
+                setShowWidget(true);
+            }
+            setShowDetails(true);
+            if (index_1 === -1) {
+                setSelectedItem(0);
+            }
+            else {
+                setSelectedItem(index_1);
+            }
+        }
+    }, [selectedTitle]);
+    React.useEffect(function () {
+        var _a;
+        if (!((_a = itemDataList[selectedItem]) === null || _a === void 0 ? void 0 : _a.content)) {
+            setDivHeight(DEAFULT_HEIGHT);
+        }
+    }, [itemDataList[selectedItem]]);
+    var springProps = J({
+        height: showDiv ? "".concat(divHeight, "px") : "0",
+        opacity: showDiv ? 1 : 0,
+        overflow: "hidden",
+        config: { tension: 60, friction: 10 },
+    });
+    var arrowButtonSpringProps = J({
+        opacity: showArrowButton ? 1 : 0,
+        display: showArrowButton ? "inline-block" : "none",
+        marginRight: showArrowButton ? "0" : "-34px",
+        trans: [0, 1, 2],
+    });
     var onClickList = function (title) { return __awaiter(void 0, void 0, void 0, function () {
-        var error_1;
+        var _a, _b, _c;
+        return __generator(this, function (_d) {
+            setShowDetails(true);
+            setTimeout(function () {
+                setShowArrowButton(true);
+            }, 1700);
+            try {
+                setDivHeight(DEAFULT_HEIGHT);
+                itemDataList[selectedItem].content =
+                    (_c = (_b = (_a = insightList[selectedItem]) === null || _a === void 0 ? void 0 : _a.choices[0]) === null || _b === void 0 ? void 0 : _b.message) === null || _c === void 0 ? void 0 : _c.content;
+            }
+            catch (error) {
+                setDivHeight(DEAFULT_HEIGHT);
+                console.log(error);
+            }
+            return [2 /*return*/];
+        });
+    }); };
+    var onSetHeight = function (height) {
+        setDivHeight(height);
+    };
+    var onClickPopupButton = function () { return __awaiter(void 0, void 0, void 0, function () {
+        var timer_1, questionPrompts;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    _a.trys.push([0, 2, , 3]);
-                    return [4 /*yield*/, engine.generateText(title)];
+                    if (!selectedTitleData && !showStatusError) {
+                        setDivHeight(400);
+                    }
+                    if (!!showWidget) return [3 /*break*/, 1];
+                    setShowDiv(false);
+                    setInsightList([]);
+                    if (refPopUp.current) {
+                        refPopUp.current.className = "main-popup-container-animate-end";
+                        timer_1 = setTimeout(function () {
+                            if (!selectedTitleData) {
+                                setShowDetails(false);
+                            }
+                            else {
+                                setSelectedTitleData("");
+                            }
+                        }, 500);
+                        return [2 /*return*/, function () { return clearTimeout(timer_1); }];
+                    }
+                    return [3 /*break*/, 5];
                 case 1:
-                    _a.sent();
-                    return [3 /*break*/, 3];
+                    setShowDiv(true);
+                    if (refPopUp.current) {
+                        refPopUp.current.className = "main-popup-container-animate-start";
+                    }
+                    questionPrompts = [];
+                    if (selectedTitleData) {
+                        questionPrompts.push(selectedTitle);
+                    }
+                    else {
+                        questionPrompts = itemList.map(function (x) { return x.payload; });
+                    }
+                    setPrompts(questionPrompts);
+                    return [4 /*yield*/, validateApiKey()];
                 case 2:
-                    error_1 = _a.sent();
-                    console.log(error_1);
-                    return [3 /*break*/, 3];
+                    if (!_a.sent()) return [3 /*break*/, 4];
+                    return [4 /*yield*/, getInsights(questionPrompts, selectedItem)];
                 case 3:
-                    setShowDetails(true);
-                    return [2 /*return*/];
+                    _a.sent();
+                    return [3 /*break*/, 5];
+                case 4:
+                    setShowStatusError(true);
+                    setDivHeight(DEAFULT_HEIGHT);
+                    _a.label = 5;
+                case 5: return [2 /*return*/];
             }
         });
     }); };
-    var onClickPopupButton = function () {
-        setShowDiv(!showDiv);
-        setShowDetails(false);
-        if (showPopUp) {
-            if (refPopUp.current) {
-                refPopUp.current.className = "main-popup-container-animate-end";
-                var timer_1 = setTimeout(function () {
-                    setShowPopUp(false);
-                }, 250);
-                return function () { return clearTimeout(timer_1); };
+    // make a hook that makes sure getInsights is called only once
+    var _u = React.useState(false), calledInsights = _u[0], setCalledInsights = _u[1];
+    var getInsights = function (promptsData, selectedIndex) { return __awaiter(void 0, void 0, void 0, function () {
+        var response, failedArrIndexes_1, filteredResponse_1, newPromptsData_1, newPromtData_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    if (!!calledInsights) return [3 /*break*/, 2];
+                    console.log("getInsights");
+                    response = void 0;
+                    return [4 /*yield*/, engine.generateTextList(promptsData)];
+                case 1:
+                    response = _a.sent();
+                    failedArrIndexes_1 = [];
+                    filteredResponse_1 = [];
+                    response.forEach(function (x, index) {
+                        if (x.error) {
+                            failedArrIndexes_1.push(failedRequestIndexes.length ? failedRequestIndexes[index] : index);
+                        }
+                    });
+                    setFailedRequestIndexes(failedArrIndexes_1);
+                    if (response.filter(function (x) { return !x.error; }).length) {
+                        filteredResponse_1 = response.map(function (x, i) {
+                            return __assign(__assign({}, x), { index: selectedTitleData ? selectedIndex : failedRequestIndexes[i] || i });
+                        });
+                    }
+                    else {
+                        filteredResponse_1 = response.map(function (x, i) {
+                            return __assign(__assign({}, x), { index: selectedTitleData ? selectedIndex : i });
+                        });
+                    }
+                    setInsightList(function (prev) { return __spreadArray(__spreadArray([], prev, true), filteredResponse_1.filter(function (x) { return !x.error; }), true); });
+                    newPromptsData_1 = prompts.length ? prompts : promptsData;
+                    newPromtData_1 = [];
+                    filteredResponse_1.forEach(function (x, i) {
+                        if (x.error && x.error.message.includes("Rate limit reached")) {
+                            if (newPromptsData_1[i]) {
+                                newPromtData_1.push(newPromptsData_1[i]);
+                            }
+                        }
+                    });
+                    setPrompts(newPromtData_1);
+                    setErrorPrompts(newPromtData_1);
+                    if (newPromtData_1.length) {
+                        setResendRequests(!resendRequests);
+                    }
+                    setCalledInsights(true);
+                    _a.label = 2;
+                case 2: return [2 /*return*/];
             }
-        }
-        else {
-            setShowPopUp(true);
-        }
-    };
+        });
+    }); };
+    var validateApiKey = function () { return __awaiter(void 0, void 0, void 0, function () {
+        var res;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, fetch("https://api.openai.com/v1/models", {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: "Bearer ".concat(engine.openAIKey),
+                        },
+                    })];
+                case 1:
+                    res = _a.sent();
+                    return [2 /*return*/, (res === null || res === void 0 ? void 0 : res.status) === 401 ? false : true];
+            }
+        });
+    }); };
     var onClickBackButton = function () {
+        setShowDetails(true);
+        setTimeout(function () {
+            setDivHeight(400);
+        }, 400);
         if (showDetails) {
             if (refBackButton.current) {
                 refBackButton.current.className =
                     "ai-assistant-main-popup-header-back-button-style-end";
                 ref.current.log();
+                setShowArrowButton(false);
                 var timer_2 = setTimeout(function () {
                     setShowDetails(false);
-                }, 250);
+                }, 500);
                 return function () { return clearTimeout(timer_2); };
             }
         }
         else {
+            setShowArrowButton(false);
             setShowDetails(true);
         }
     };
-    var _g = React.useState(false), showDiv = _g[0], setShowDiv = _g[1];
-    var springProps = J({
-        height: showDiv ? "427px" : "0",
-        opacity: showDiv ? 1 : 0,
-        overflow: "hidden",
-        config: { tension: 110, friction: 80 },
-    });
     return (React__default["default"].createElement(React__default["default"].Fragment, null,
         React__default["default"].createElement("div", { className: "ai-assistant-main-container" },
-            React__default["default"].createElement(Button, { style: { backgroundColor: color }, className: "main-popup-button", onClick: function () { return onClickPopupButton(); }, child: showPopUp ? (React__default["default"].createElement(CrossIcon, { color: "#ffffff" })) : (React__default["default"].createElement("img", { src: image, alt: "img", width: "32px", height: "32px" })) }),
-            showPopUp && (React__default["default"].createElement(it.div, { style: springProps, ref: refPopUp, id: "tunnel", className: "main-popup-container-animate-start" },
+            showButton && (React__default["default"].createElement(Button, { style: { backgroundColor: color }, className: "main-popup-button", onClick: function () {
+                    setSelectedTitleData("");
+                    setShowWidget(!showWidget);
+                }, child: showWidget ? (React__default["default"].createElement(CrossIcon, { color: "#ffffff" })) : (React__default["default"].createElement("img", { src: image, alt: "img", width: "32px", height: "32px" })) })),
+            React__default["default"].createElement(it.div, { style: springProps, ref: refPopUp, id: "tunnel", className: "main-popup-container-animate-start" },
                 showEnvError && React__default["default"].createElement(EnvironmentError, { color: color }),
-                React__default["default"].createElement("div", { className: "popup-header-container", style: { borderBottomColor: color } },
-                    showDetails && (React__default["default"].createElement("button", { ref: refBackButton, onClick: function () { return onClickBackButton(); }, className: "header-back-button-style" },
-                        React__default["default"].createElement(ArrowRightIcon, { color: color }))),
-                    React__default["default"].createElement("div", { className: "header-text-container" },
-                        React__default["default"].createElement(Text, { className: "header-text-style", label: "Bops Insight" }))),
-                React__default["default"].createElement("div", { className: "main-item-list-container" }, showDetails ? (React__default["default"].createElement(ItemDetail, { id: "detailif", ref: ref, color: color, itemData: itemDataList[selectedItem] })) : (itemList.map(function (item, index) { return (React__default["default"].createElement(ListItem, { item: item, key: index, onClickList: function () {
-                        onClickList(item.title);
-                        setSelectedItem(index);
-                    }, color: color })); }))))))));
+                showStatusError && (React__default["default"].createElement(InvalidApiKeyError, { color: color, errorView: errorView })),
+                !showEnvError && !showStatusError && (React__default["default"].createElement(React__default["default"].Fragment, null,
+                    React__default["default"].createElement("div", { className: "popup-header-container", style: { borderBottomColor: color } },
+                        React__default["default"].createElement(it.button, { style: arrowButtonSpringProps, ref: refBackButton, onClick: function () { return onClickBackButton(); }, className: "header-back-button-style" },
+                            React__default["default"].createElement(ArrowRightIcon, { color: color })),
+                        React__default["default"].createElement("div", { className: "header-text-container" },
+                            React__default["default"].createElement(Text, { className: "header-text-style", label: title.toLowerCase() }))),
+                    React__default["default"].createElement("div", { className: "main-item-list-container" }, showDetails ? (React__default["default"].createElement(ItemDetail, { id: "detailif", ref: ref, color: color, itemData: itemDataList[selectedItem], updateItemData: updateItemdata, onSetHeight: onSetHeight, placeholder: placeholder })) : (itemList.map(function (item, index) { return (React__default["default"].createElement(ListItem, { item: item, key: index, onClickList: function () {
+                            onClickList(item.title);
+                            setSelectedItem(index);
+                        }, color: color })); })))))))));
 };
 
 exports.AiAssistant = AiAssistant;

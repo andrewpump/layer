@@ -41,10 +41,23 @@ function App() {
       generateListItems();
     }
   });
+  
 
   return (
     <div className="main-background">
-      <AiAssistant itemList={listItems} color="#7b6cf3" image={DemoImage} />
+      
+      <AiAssistant
+        title="Bops Insights"
+        placeholder="getting insight..."
+        itemList={listItems}
+        color="#7b6cf3"
+        image={DemoImage}
+        showButton={true}
+        showPopUp={false}
+        receiveInsights={(insights) => console.log(insights)}
+        selectedTitle={''}
+        receiveQueryResponse={(response) => console.log(response)}
+      />
       <div>
         <h1>BOPS React web app in this background area!</h1>
 
