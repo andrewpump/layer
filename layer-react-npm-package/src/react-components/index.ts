@@ -1,1 +1,1 @@
-export { default as AiAssistant } from "./AiAssistant/AiAssistant";
+export * from "./AiAssistant/AiAssistant";

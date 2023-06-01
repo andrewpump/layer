@@ -10,6 +10,10 @@ import EnvironmentError from "../EnvironmentError";
 import InvalidApiKeyError from "../InvalidApiKeyError";
 import { MyDataListEngine } from "../DataListEngine";
 import { useSpring, animated } from "@react-spring/web";
+import { OpenAI } from "langchain/llms/openai";
+
+console.log(OpenAI);
+
 // const  imageLayer =  require("../../assets/images/layerImg.png");
 
 export type AiAssistantProps = {
@@ -42,7 +46,7 @@ const errorView = {
   message:
     "This is likely a problem with your OpenAI API key. Check if your api key is still enabled.",
 };
-const AiAssistant = ({
+export const AiAssistant = ({
   title,
   itemList,
   color,
@@ -239,7 +243,7 @@ const AiAssistant = ({
     let response = {};
     let errorPromises: string[] = []; // Fix the declaration and initialization
     const promises = await engine.generateTextList(promptsData);
-  
+
     while (promises.length > 0) {
       const completedIndex = await Promise.race(
         promises.map((promise, index) =>
@@ -249,14 +253,14 @@ const AiAssistant = ({
       const completedPromise = promises[completedIndex];
       promises.splice(completedIndex, 1);
       response = await completedPromise;
-  
+
       if (!response?.error) {
         setInsightData(response);
       } else {
         errorPromises.push(response?.prompt);
       }
     }
-  
+
     if (errorPromises.length > 0) {
       setTimeout(async () => {
         await getInsights(errorPromises);
@@ -265,7 +269,6 @@ const AiAssistant = ({
       errorPromises = [];
     }
   };
-  
 
   // Go back to the item list
   const onClickBackButton = () => {
@@ -409,5 +412,3 @@ const AiAssistant = ({
     </>
   );
 };
-
-export default AiAssistant;
