@@ -14,7 +14,7 @@ rm -r ./node_modules
 npm i
 npm link react
 npm link
-npm run rollup
+npm run build
 cd ..
 
 cd ./layer-test-create-react-app

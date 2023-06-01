@@ -1,14 +1,13 @@
-import { AiAssistant } from 'duckdevatgit-layer';
-import './App.css';
-import DemoImage from "./assets/images/demoImage.png"
-import data from './assets/sample.json';
-import React, { useEffect, useState } from 'react';
+import { AiAssistant } from "duckdevatgit-layer";
+import "./App.css";
+import DemoImage from "./assets/images/demoImage.png";
+import data from "./assets/sample.json";
+import React, { useEffect, useState } from "react";
 
 const customPrompt = `Justify the policy action in this json data using the other data in 
 the obejct and respond very concisely and use numbers: \n\n`;
 
 function App() {
-
   const [listItems, setListItems] = useState<any>([]);
 
   // A function generateListItems that randomly selects 3 to 5 items from data
@@ -17,7 +16,10 @@ function App() {
     const randomNum = Math.floor(Math.random() * 3) + 3;
     for (let i = 0; i < randomNum; i++) {
       const randomIndex = Math.floor(Math.random() * data.length);
-      if (data[randomIndex].policy_action !== "No recommendation" && data[randomIndex].policy_action !== "No action required") {
+      if (
+        data[randomIndex].policy_action !== "No recommendation" &&
+        data[randomIndex].policy_action !== "No action required"
+      ) {
         const construct = {
           title: data[randomIndex].policy_action,
           subtitle: data[randomIndex].product_code_description,
@@ -28,11 +30,10 @@ function App() {
       } else {
         i--;
       }
-
     }
     setListItems(li);
   };
-  
+
   const [once, setOnce] = useState<boolean>(false);
 
   useEffect(() => {
@@ -44,7 +45,17 @@ function App() {
 
   return (
     <div className="main-background">
-      <AiAssistant itemList={listItems} color="#7b6cf3" image={DemoImage} />
+      <AiAssistant
+        itemList={listItems}
+        color="#7b6cf3"
+        image={DemoImage}
+        title={"something"}
+        showButton
+        placeholder={""}
+        selectedTitle={""}
+        receiveInsights={console.log}
+        receiveQueryResponse={console.log}
+      />
       <div>
         <h1>BOPS React web app in this background area!</h1>
 
@@ -59,7 +70,9 @@ function App() {
             );
           })}
         </div>
-        <button className="custom-button" onClick={generateListItems}>Regenerate List Items</button>
+        <button className="custom-button" onClick={generateListItems}>
+          Regenerate List Items
+        </button>
       </div>
     </div>
   );
