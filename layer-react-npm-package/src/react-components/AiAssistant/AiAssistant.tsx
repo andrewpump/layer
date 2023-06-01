@@ -46,7 +46,7 @@ const errorView = {
   message:
     "This is likely a problem with your OpenAI API key. Check if your api key is still enabled.",
 };
-const AiAssistant = ({
+export const AiAssistant = ({
   title,
   itemList,
   color,
@@ -412,5 +412,3 @@ const AiAssistant = ({
     </>
   );
 };
-
-export default AiAssistant;
